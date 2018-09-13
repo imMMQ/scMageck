@@ -142,9 +142,10 @@ def build_star_index(config,output_fasta,output_gtf,spiked_dir):
     cmd += " --sjdbGTFfile {}".format(final_gtf)
     cmd += " --sjdbOverhang 74"
     if "tmp_dir" in config["paths"]:
-        tmpdir=config["paths"]["tmp_dir"]
+        tmpdir=os.path.join(config["paths"]["tmp_dir"],'STARtmp')
         if os.path.exists(tmpdir):
-            systemcall('rm -rf '+tmpdir)
+            print('Error: STAR tmp already exists. Please manually remove it:'+tmpdir)
+            sys.exit(-1)
         cmd += " --outTmpDir {}".format(tmpdir)
     systemcall(cmd)
 

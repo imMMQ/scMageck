@@ -114,7 +114,7 @@ def fastq2bam(config,args):
   return systemcall(cmd,run=not args.no_run)
 
 
-def step1(input_file,output_prefix,args):
+def step1(input_file,output_prefix,args,config):
     # Stage 0: pre-alignment tag and trim
     # Tag with cell barcode
     logging.info("## Step 1: Tagging BAM file with cell barcode")
@@ -131,7 +131,7 @@ def step1(input_file,output_prefix,args):
     return systemcall(cmd,run=not args.no_run)
     # pipe.clean_add(os.path.join(output_dir, "unaligned_tagged_Cell.bam"), manual=True)
 
-def step2(output_prefix,args):
+def step2(output_prefix,args,config):
     # Tag with molecule barcode
     logging.info("## Step 2: Tagging BAM file with molecule barcode (UMI)")
     cmd = os.path.join(parameters.dropseq_root, "TagBamWithReadSequenceExtended")
@@ -146,7 +146,7 @@ def step2(output_prefix,args):
     return systemcall(cmd,run=not args.no_run)
 
 
-def step3(output_prefix,args):
+def step3(output_prefix,args,config):
     # Filter bam
     logging.info("## Step 3: Filtering BAM file")
     cmd = os.path.join(parameters.dropseq_root, "FilterBAM")
@@ -156,7 +156,7 @@ def step3(output_prefix,args):
     return systemcall(cmd,run=not args.no_run)
     # pipe.clean_add(os.path.join(output_dir, "unaligned_tagged_filtered.bam"), manual=True)
 
-def step4(output_prefix,args):
+def step4(output_prefix,args,config):
     # Trim starting sequence
     logging.info("## Step 4: Triming starting sequence")
     cmd = os.path.join(parameters.dropseq_root, "TrimStartingSequence")
@@ -170,7 +170,7 @@ def step4(output_prefix,args):
     #pipe.clean_add(os.path.join(output_dir, "unaligned_tagged_trimmed_smart.bam"), manual=True)
 
 
-def step5(output_prefix,args):
+def step5(output_prefix,args,config):
     # Trim polyA tail
     logging.info("## Step 5: Trimming polyA tail")
     cmd = os.path.join(parameters.dropseq_root, "PolyATrimmer")
@@ -182,7 +182,7 @@ def step5(output_prefix,args):
     #pipe.clean_add(os.path.join(output_dir, "unaligned_mc_tagged_polyA_filtered.bam"), manual=True)
     return systemcall(cmd,run=not args.no_run)
 
-def step6(output_prefix,args):
+def step6(output_prefix,args,config):
     # Stage 2: alignment
     # Convert to fastq
     logging.info("## Step 6: Converting to Fastq")
@@ -197,7 +197,7 @@ def step6(output_prefix,args):
     return systemcall(cmd,run=not args.no_run)
 
 
-def step7(output_prefix,args):
+def step7(output_prefix,args,config):
     # Align reads
     logging.info("## Step 7: Aligning reads with STAR")
     cmd = parameters.star
@@ -205,11 +205,17 @@ def step7(output_prefix,args):
     cmd += " --runThreadN {}".format(parameters.cores)
     cmd += " --outFileNamePrefix " + output_prefix+ "_star."
     cmd += " --readFilesIn " + output_prefix+ "_unaligned_mc_tagged_polyA_filtered.fastq"
+    if "tmp_dir" in config["paths"]:
+        tmpdir=os.path.join(config["paths"]["tmp_dir"],'STARtmp')
+        if os.path.exists(tmpdir):
+            print('Error: STAR tmp already exists. Please manually remove it:'+tmpdir)
+            sys.exit(-1)
+        cmd += " --outTmpDir {}".format(tmpdir)
     #pipe.run(cmd, os.path.join(output_dir, "star.Aligned.out.sam"))
     #pipe.clean_add(os.path.join(output_dir, "star.Aligned.out.sam"), manual=True)
     return systemcall(cmd,run=not args.no_run)
 
-def step8(output_prefix,args):
+def step8(output_prefix,args,config):
     # Stage 3: sort aligned reads (STAR does not necessarily emit reads in the same order as the input)
     logging.info("## Step 8: Sorting aligned BAM file")
     #cmd = "java -Dsamjdk.buffer_size=131072 -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xmx{}g".format(int(args.mem) / 1000)
@@ -224,7 +230,7 @@ def step8(output_prefix,args):
     #pipe.clean_add(os.path.join(output_dir, "aligned.sorted.bam"), manual=True)
     return systemcall(cmd,run=not args.no_run)
 
-def step9(output_prefix,args):
+def step9(output_prefix,args,config):
     # Stage 4: merge and tag aligned reads
     # Merge
     logging.info("## Step 9: Merging aligned with unaligned reads")
@@ -242,7 +248,7 @@ def step9(output_prefix,args):
     #pipe.clean_add(os.path.join(output_dir, "merged.bam"), manual=True)
     return systemcall(cmd,run=not args.no_run)
 
-def step10(output_prefix,args):
+def step10(output_prefix,args,config):
     # Tag reads with exon
     logging.info("## Step 10: Tagging reads with exon")
     cmd = os.path.join(parameters.dropseq_root, "TagReadWithGeneExon")
@@ -254,7 +260,7 @@ def step10(output_prefix,args):
     return systemcall(cmd,run=not args.no_run)
     #pipe.run(cmd, os.path.join(output_dir, "star_gene_exon_tagged.bam"))
 
-def step11(output_prefix,args):
+def step11(output_prefix,args,config):
     logging.info("## Step 11")
     if parameters.repair_barcodes:
         # Detect and fix bead synthesis errors
@@ -329,7 +335,7 @@ def step11(output_prefix,args):
 
 
 
-def step12(output_prefix,args):
+def step12(output_prefix,args,config):
 
     logging.info("## Step 12")
     if parameters.repair_barcodes:
@@ -396,51 +402,51 @@ if __name__ == '__main__':
     logging.info('Input:'+input_file)
     logging.info('Output_prefix:'+output_prefix)
     if 1 in args.step_only:
-      if step1(input_file,output_prefix,args)!=0:
+      if step1(input_file,output_prefix,args,config)!=0:
         logging.error('Error in step 1.')
         sys.exit(-1)
     if 2 in args.step_only:
-      if step2(output_prefix,args)!=0:
+      if step2(output_prefix,args,config)!=0:
         logging.error('Error in step 2.')
         sys.exit(-1)
     if 3 in args.step_only:
-      if step3(output_prefix,args)!=0:
+      if step3(output_prefix,args,config)!=0:
         logging.error('Error in step 3.')
         sys.exit(-1)
     if 4 in args.step_only:
-      if step4(output_prefix,args)!=0:
+      if step4(output_prefix,args,config)!=0:
         logging.error('Error in step 4.')
         sys.exit(-1)
     if 5 in args.step_only:
-      if step5(output_prefix,args)!=0:
+      if step5(output_prefix,args,config)!=0:
         logging.error('Error in step 5.')
         sys.exit(-1)
     if 6 in args.step_only:
-      if step6(output_prefix,args)!=0:
+      if step6(output_prefix,args,config)!=0:
         logging.error('Error in step 6.')
         sys.exit(-1)
     if 7 in args.step_only:
-      if step7(output_prefix,args)!=0:
+      if step7(output_prefix,args,config)!=0:
         logging.error('Error in step 7.')
         sys.exit(-1)
     if 8 in args.step_only:
-      if step8(output_prefix,args)!=0:
+      if step8(output_prefix,args,config)!=0:
         logging.error('Error in step 8.')
         sys.exit(-1)
     if 9 in args.step_only:
-      if step9(output_prefix,args)!=0:
+      if step9(output_prefix,args,config)!=0:
         logging.error('Error in step 9.')
         sys.exit(-1)
     if 10 in args.step_only:
-      if step10(output_prefix,args)!=0:
+      if step10(output_prefix,args,config)!=0:
         logging.error('Error in step 10.')
         sys.exit(-1)
     if 11 in args.step_only:
-      if step11(output_prefix,args)!=0:
+      if step11(output_prefix,args,config)!=0:
         logging.error('Error in step 11.')
         sys.exit(-1)
     if 12 in args.step_only:
-      if step12(output_prefix,args)!=0:
+      if step12(output_prefix,args,config)!=0:
         logging.error('Error in step 12.')
         sys.exit(-1)
   except KeyboardInterrupt:

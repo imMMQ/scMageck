@@ -3,7 +3,7 @@ paths:
   # output_dir: ABSOLUTE PATH to the parent, shared space where project results go
   output_dir: /lustre/groups/vilaingrp/wei_li/tmp2 
   # an optional tmp dir
-  tmp_dir: /lustre/groups/vilaingrp/wei_li/tmp/tmp
+  tmp_dir: /lustre/groups/vilaingrp/wei_li/tmp/
 
 fastq:
   # the path to the output fastq file
