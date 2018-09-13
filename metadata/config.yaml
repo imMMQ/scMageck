@@ -3,7 +3,7 @@ paths:
   # output_dir: ABSOLUTE PATH to the parent, shared space where project results go
   output_dir: /lustre/groups/vilaingrp/wei_li/tmp2 
   # an optional tmp dir
-  tmp_dir: /lustre/groups/vilaingrp/wei_li/tmp
+  tmp_dir: /lustre/groups/vilaingrp/wei_li/tmp/tmp
 
 fastq:
   # the path to the output fastq file
@@ -19,9 +19,9 @@ metadata:
 
 genomes:
   # ABSOLUTE path of reference genome (fasta)
-  fa: /lustre/groups/vilaingrp/wei_li/GRCh38/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+  fa: /home/wei_li/bitbucket/cropseqpipeline/demo/ref/chr22.fa
   # ABSOLUTE path of reference GTF
-  gtf: /lustre/groups/vilaingrp/wei_li/GRCh38/Homo_sapiens.GRCh38.77.gtf
+  gtf: /home/wei_li/bitbucket/cropseqpipeline/demo/ref/Homo_sapiens.GRCh38.77.chr22.gtf
 
 # CROP-seq plasmid sequences
 crop-seq:

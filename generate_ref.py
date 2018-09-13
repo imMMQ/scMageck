@@ -142,7 +142,10 @@ def build_star_index(config,output_fasta,output_gtf,spiked_dir):
     cmd += " --sjdbGTFfile {}".format(final_gtf)
     cmd += " --sjdbOverhang 74"
     if "tmp_dir" in config["paths"]:
-        cmd += " --outTmpDir {}".format(config["paths"]["tmp_dir"])
+        tmpdir=config["paths"]["tmp_dir"]
+        if os.path.exists(tmpdir):
+            systemcall('rm -rf '+tmpdir)
+        cmd += " --outTmpDir {}".format(tmpdir)
     systemcall(cmd)
 
     # Create sequence dictionaries (for piccard)
