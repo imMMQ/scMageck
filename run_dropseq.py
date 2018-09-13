@@ -4,17 +4,22 @@ from __future__ import print_function
 import sys
 import os
 import re
+import yaml
+
+        
+def systemcall(command, cmsg=True):
+  if cmsg:
+    print('SYSTEM CMD: '+command)
+    os.system(command)
+
+
+
 
 class parameters:
-  dropseq_root="/home/wl948/datarun/wl948/project/crispr/cropseq/dropseqbin"
   picard_jar="picard"
   star="STAR"
-  star_index='/scratch/wl948/hg38_spiked_Tcrlibrary'
   cores=4
-  refgenome='/scratch/wl948/hg38_spiked_Tcrlibrary/Homo_sapiens.GRCh38.dna.primary_assembly.spiked.fa'
-  refflat='/scratch/wl948/hg38_spiked_Tcrlibrary/Homo_sapiens.GRCh38.dna.primary_assembly.spiked.refFlat'
-  output_dir="outputbam"
-  tmp_dir="/scratch/wl948/tmp"
+  
   cell_barcode_bases="1-12"
   umi_barcode_bases="13-20"
   min_base_quality=10
@@ -30,11 +35,31 @@ class parameters:
   bead_primer_sequence="AAGCAGTGGTATCAACGCAGAGTAC"
   distance_to_bead_primer_seq=0
   max_number_barcode_bases_to_repair=4
+  # to be replaced by config file 
+  dropseq_root="/home/wl948/datarun/wl948/project/crispr/cropseq/dropseqbin"
+  star_index='/scratch/wl948/hg38_spiked_Tcrlibrary'
+  refgenome='/scratch/wl948/hg38_spiked_Tcrlibrary/Homo_sapiens.GRCh38.dna.primary_assembly.spiked.fa'
+  refflat='/scratch/wl948/hg38_spiked_Tcrlibrary/Homo_sapiens.GRCh38.dna.primary_assembly.spiked.refFlat'
+  output_dir="outputbam"
+  tmp_dir="/scratch/wl948/tmp"
 
-def systemcall(cmd):
-    print(cmd)
-    os.system(cmd)
     
+
+def fastq2bam(config):
+  fq1=config["fastq"]["fq1"]
+  fq2=config["fastq"]["fq2"]
+  #outf=fastq/$folder/output.bam
+  outf=os.path.join(parameters.output_dir,"in.bam")
+  sample=config["fastq"]["label"]
+  # command="picard FastqToSam F1=SRR5128078_1.fastq F2=SRR5128078_2.fastq O=SRR5128078.bam SM=CROP-seq_Jurkat_TCR_stimulated_r1"
+  cmd=parameters.picard_jar
+  cmd+=" FastqToSam"
+  cmd+=" F1="+fq1+" F2="+fq2
+  cmd+=" O="+outf
+  cmd+=" SM="+sample
+  if "tmp_dir" in config["paths"]:
+    cmd+=" TMP_DIR="+config["paths"]["tmp_dir"]
+  return systemcall(cmd)
 
 
 def step1(input_file,output_prefix):
@@ -51,7 +76,7 @@ def step1(input_file,output_prefix):
     #cmd += " OUTPUT=" + os.path.join(output_dir, "unaligned_tagged_Cell.bam")
     cmd += " SUMMARY=" + output_prefix + "_unaligned_tagged_Cellular.bam_summary.txt"
     cmd += " OUTPUT=" + output_prefix+ "_unaligned_tagged_Cell.bam"
-    systemcall(cmd)
+    return systemcall(cmd)
     # pipe.clean_add(os.path.join(output_dir, "unaligned_tagged_Cell.bam"), manual=True)
 
 def step1_5(output_prefix):
@@ -66,7 +91,7 @@ def step1_5(output_prefix):
     cmd += " INPUT=" + output_prefix+ "_unaligned_tagged_Cell.bam"
     cmd += " OUTPUT=" + output_prefix+ "_unaligned_tagged_CellMolecular.bam"
     #pipe.run(cmd, os.path.join(output_dir, "unaligned_tagged_CellMolecular.bam"))
-    systemcall(cmd)
+    return systemcall(cmd)
 
 
 def step2(output_prefix):
@@ -76,7 +101,7 @@ def step2(output_prefix):
     cmd += " TAG_REJECT=XQ"
     cmd += " INPUT=" + output_prefix+ "_unaligned_tagged_CellMolecular.bam"
     cmd += " OUTPUT=" + output_prefix+ "_unaligned_tagged_filtered.bam"
-    systemcall(cmd)
+    return systemcall(cmd)
     # pipe.clean_add(os.path.join(output_dir, "unaligned_tagged_filtered.bam"), manual=True)
 
 def step3(output_prefix):
@@ -89,7 +114,7 @@ def step3(output_prefix):
     cmd += " INPUT=" + output_prefix+ "_unaligned_tagged_filtered.bam"
     cmd += " OUTPUT=" + output_prefix+"_unaligned_tagged_trimmed_smart.bam"
     #pipe.run(cmd, os.path.join(output_dir, "unaligned_tagged_trimmed_smart.bam"))
-    systemcall(cmd)
+    return systemcall(cmd)
     #pipe.clean_add(os.path.join(output_dir, "unaligned_tagged_trimmed_smart.bam"), manual=True)
 
 
@@ -103,7 +128,7 @@ def step4(output_prefix):
     cmd += " OUTPUT=" + output_prefix+ "_unaligned_mc_tagged_polyA_filtered.bam"
     #pipe.run(cmd, os.path.join(output_dir, "unaligned_mc_tagged_polyA_filtered.bam"))
     #pipe.clean_add(os.path.join(output_dir, "unaligned_mc_tagged_polyA_filtered.bam"), manual=True)
-    systemcall(cmd)
+    return systemcall(cmd)
 
 def step5(output_prefix):
     # Stage 2: alignment
@@ -117,7 +142,7 @@ def step5(output_prefix):
     cmd += " TMP_DIR="+parameters.tmp_dir
     #pipe.run(cmd, os.path.join(output_dir, "unaligned_mc_tagged_polyA_filtered.fastq"))
     #pipe.clean_add(os.path.join(output_dir, "unaligned_mc_tagged_polyA_filtered.fastq"), manual=True)
-    systemcall(cmd)
+    return systemcall(cmd)
 
 
 def step6(output_prefix):
@@ -130,7 +155,7 @@ def step6(output_prefix):
     cmd += " --readFilesIn " + output_prefix+ "_unaligned_mc_tagged_polyA_filtered.fastq"
     #pipe.run(cmd, os.path.join(output_dir, "star.Aligned.out.sam"))
     #pipe.clean_add(os.path.join(output_dir, "star.Aligned.out.sam"), manual=True)
-    systemcall(cmd)
+    return systemcall(cmd)
 
 def step7(output_prefix):
     # Stage 3: sort aligned reads (STAR does not necessarily emit reads in the same order as the input)
@@ -145,7 +170,7 @@ def step7(output_prefix):
     cmd += " TMP_DIR=" + parameters.tmp_dir
     #pipe.run(cmd, os.path.join(output_dir, "aligned.sorted.bam"))
     #pipe.clean_add(os.path.join(output_dir, "aligned.sorted.bam"), manual=True)
-    systemcall(cmd)
+    return systemcall(cmd)
 
 def step8(output_prefix):
     # Stage 4: merge and tag aligned reads
@@ -163,7 +188,7 @@ def step8(output_prefix):
     cmd += " TMP_DIR=" + parameters.tmp_dir
     #pipe.run(cmd, os.path.join(output_dir, "merged.bam"))
     #pipe.clean_add(os.path.join(output_dir, "merged.bam"), manual=True)
-    systemcall(cmd)
+    return systemcall(cmd)
 
 def step9(output_prefix):
     # Tag reads with exon
@@ -174,7 +199,7 @@ def step9(output_prefix):
     cmd += " ANNOTATIONS_FILE={}".format(parameters.refflat)
     cmd += " TAG=GE CREATE_INDEX=true"
     cmd += " INPUT=" + output_prefix+"_merged.bam"
-    systemcall(cmd)
+    return systemcall(cmd)
     #pipe.run(cmd, os.path.join(output_dir, "star_gene_exon_tagged.bam"))
 
 def step10(output_prefix):
@@ -192,7 +217,8 @@ def step10(output_prefix):
         cmd += " MAX_NUM_ERRORS={}".format(parameters.max_number_barcode_bases_to_repair)
         cmd += " TMP_DIR=" + parameters.tmp_dir
         #pipe.run(cmd, os.path.join(output_dir, "star_gene_exon_tagged.clean.bam"))
-        systemcall(cmd)
+        if systemcall(cmd)!=0:
+          return -1
         bam_file = output_prefix+ "_star_gene_exon_tagged.clean.bam"
     else:
         bam_file = output_prefix+ "_star_gene_exon_tagged.bam"
@@ -206,7 +232,8 @@ def step10(output_prefix):
     cmd += " OUTPUT=" + output_prefix+ "_quality_distribution.cell_barcode.txt"
     cmd += " TAG=XC"
     #pipe.run(cmd, os.path.join(output_dir, "quality_distribution.cell_barcode.txt"))
-    systemcall(cmd)
+    if systemcall(cmd)!=0:
+      return -1
     # UMI
     print("## Read quality in molecule barcodes")
     cmd = os.path.join(parameters.dropseq_root, "GatherReadQualityMetrics")
@@ -214,7 +241,8 @@ def step10(output_prefix):
     cmd += " OUTPUT=" + output_prefix+ "_quality_distribution.mol_barcode.txt"
     cmd += " TAG=XM"
     #pipe.run(cmd, os.path.join(output_dir, "quality_distribution.mol_barcode.txt")) 
-    systemcall(cmd)
+    if systemcall(cmd)!=0:
+      return -1
     
     # Distribution of bases in reads
     # cell barcode
@@ -224,7 +252,8 @@ def step10(output_prefix):
     cmd += " OUTPUT=" + output_prefix+ "_base_distribution.cell_barcode.txt"
     cmd += " TAG=XC"
     #pipe.run(cmd, os.path.join(output_dir, "base_distribution.cell_barcode.txt"))   
-    systemcall(cmd)
+    if systemcall(cmd)!=0:
+      return -1
     # UMI
     print("## Distribution of bases in molecule barcodes (UMI)")
     cmd = os.path.join(parameters.dropseq_root, "BaseDistributionAtReadPosition")
@@ -232,7 +261,8 @@ def step10(output_prefix):
     cmd += " OUTPUT=" + output_prefix+ "_base_distribution.mol_barcode.txt"
     cmd += " TAG=XM"
     #pipe.run(cmd, os.path.join(output_dir, "base_distribution.mol_barcode.txt"))
-    systemcall(cmd)
+    if systemcall(cmd) !=0:
+      return -1
     
     # Reads per cell summary
     print("## Reporting summary of reads per cell")
@@ -242,7 +272,7 @@ def step10(output_prefix):
     cmd += " FILTER_PCR_DUPLICATES=true"
     cmd += " TAG=XC"
     #pipe.run(cmd, os.path.join(output_dir, "cell_readcounts.txt"))
-    systemcall(cmd)
+    return systemcall(cmd)
 
 
 
@@ -263,7 +293,8 @@ def step11(output_prefix):
         cmd += " SUMMARY=" + output_prefix+ "_digital_expression.summary.{}genes.tsv".format(n_genes)
         cmd += " MIN_NUM_GENES_PER_CELL={}".format(n_genes)
         #pipe.run(cmd, os.path.join(output_dir, "digital_expression.{}genes.tsv".format(n_genes)), nofail=True)
-        systemcall(cmd)
+        if systemcall(cmd)!=0:
+          return -1
 
     # Report how often the same UMI is found per cell per gene --> estimate of PCR duplicates
     for n_genes in parameters.min_genes_per_cell:
@@ -275,32 +306,76 @@ def step11(output_prefix):
         cmd += " OUTPUT=" + output_prefix+ "cell_umi_barcodes.{}genes.tsv".format(n_genes)
         cmd += " MIN_NUM_GENES_PER_CELL={}".format(n_genes)
         #pipe.run(cmd, os.path.join(output_dir, "cell_umi_barcodes.{}genes.tsv".format(n_genes)))
-        systemcall(cmd)
+        if systemcall(cmd)!=0:
+          return -1
+    return 0
 
 
     
 
+def read_config(configfile):
+    config=yaml.load(open(configfile))
+    parameters.dropseq_root=""
+    parameters.star_index=os.path.join(config["paths"]["output_dir"],"spiked_genomes")
+    parameters.refgenome=os.path.join(config["paths"]["output_dir"],"spiked_genomes","spiked.fa")
+    parameters.refflat=os.path.join(config["paths"]["output_dir"],"spiked_genomes","spiked.refFlat")
+    parameters.output_dir=os.path.join(config["paths"]["output_dir"],"outputbam")
+    if not os.path.exists(parameters.output_dir):
+        os.makedirs(parameters.output_dir)
+    parameters.tmp_dir=config["paths"]["tmp_dir"]
+    return config
 
 
 
 if __name__ == '__main__':
   try:
-    input_file=sys.argv[1]
-    output_prefix=sys.argv[2]
+    config=read_config(sys.argv[1])
+    input_file=os.path.join(parameters.output_dir,"in.bam")
+    output_prefix=os.path.join(parameters.output_dir,"out")
+    # convert fastq to bam
+    if fastq2bam(config)!=0:
+        print('Error converting fastq to bam.')
+        sys.exit(-1)
+    #input_file=sys.argv[1]
+    #output_prefix=sys.argv[2]
     print('Input:'+input_file)
     print('Output_prefix:'+output_prefix)
-    #step1(input_file,output_prefix)
-    #step1_5(output_prefix)
-    #step2(output_prefix)
-    #step3(output_prefix)
-    #step4(output_prefix)
-    #step5(output_prefix)
-    step6(output_prefix)
-    step7(output_prefix)
-    step8(output_prefix)
-    step9(output_prefix)
-    step10(output_prefix)
-    step11(output_prefix)
+    if step1(input_file,output_prefix)!=0:
+        print('Error in step 1.')
+        sys.exit(-1)
+    if step1_5(output_prefix)!=0:
+        print('Error in step 1.')
+        sys.exit(-1)
+    if step2(output_prefix)!=0:
+        print('Error in step 2.')
+        sys.exit(-1)
+    if step3(output_prefix)!=0:
+        print('Error in step 3.')
+        sys.exit(-1)
+    if step4(output_prefix)!=0:
+        print('Error in step 4.')
+        sys.exit(-1)
+    if step5(output_prefix)!=0:
+        print('Error in step 5.')
+        sys.exit(-1)
+    if step6(output_prefix)!=0:
+        print('Error in step 6.')
+        sys.exit(-1)
+    if step7(output_prefix)!=0:
+        print('Error in step 7.')
+        sys.exit(-1)
+    if step8(output_prefix)!=0:
+        print('Error in step 8.')
+        sys.exit(-1)
+    if step9(output_prefix)!=0:
+        print('Error in step 9.')
+        sys.exit(-1)
+    if step10(output_prefix)!=0:
+        print('Error in step 10.')
+        sys.exit(-1)
+    if step11(output_prefix)!=0:
+        print('Error in step 11.')
+        sys.exit(-1)
   except KeyboardInterrupt:
     sys.stderr.write("Interrupted.\n")
     sys.exit(0)

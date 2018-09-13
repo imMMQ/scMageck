@@ -1,28 +1,21 @@
 
 paths:
   # output_dir: ABSOLUTE PATH to the parent, shared space where project results go
-  output_dir: /scratch/wl948/cropseq 
-  # results and submission subdirs are subdirectors directories under parent output_dir
-  # results: where output sample folders will go
-  # submission: where cluster submit scripts and log files will go
-  results_subdir: results_pipeline
-  submission_subdir: submission
-  # pipelines_dir: ABSOLUTE PATH the directory where the Looper will find the pipelines repository
-  # replace with yours:
-  pipelines_dir: /home/wl948/datarun/wl948/workspace/open_pipelines
+  output_dir: /lustre/groups/vilaingrp/wei_li/tmp 
+  # an optional tmp dir
+  tmp_dir: /lustre/groups/vilaingrp/wei_li/tmp
+
+fastq:
+  # the path to the output fastq file
+  fq1: sample1_R1.fq
+  fq2: sample1_R2.fq
+  label: sample1
 
 metadata:
-  # Elements in this section can be absolute or relative.
-  # Typically, this project config file is stored with the project metadata, so
-  # relative paths are considered relative to this project config file.
   # sample_annotation: one-row-per-sample metadata
-  sample_annotation: annotation.csv
-  #
-  sgrna_table: 
-  # merge_table: input for samples with more than one input file
-  merge_table: merge_table.csv
-  # compare_table: comparison pairs or groups, like normalization samples
-  compare_table: null.csv
+  # sample_annotation: annotation.csv
+  # sgRNA table, in txt format
+  sgrna_table: /home/wei_li/bitbucket/cropseqpipeline/metadata/test_sgrna.txt 
 
 genomes:
   # ABSOLUTE path of reference genome (fasta)

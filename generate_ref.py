@@ -9,7 +9,7 @@ import re
 
 def systemcall(command, cmsg=True):
   if cmsg:
-    print('CMD:'+command)
+    print('SYSTEM CMD: '+command)
     os.system(command)
 
 
@@ -87,7 +87,8 @@ def read_config(configfile):
     return config
   
 
-def generate_annotations(config,sgrna_annotation,prefix):
+def generate_annotations(config,sgrna_annotation):
+        prefix=config["paths"]["output_dir"]
         output_dir = os.path.join(prefix, "spiked_genomes")
     
         #spiked_dir = os.path.join(output_dir, library) 
@@ -140,15 +141,18 @@ def build_star_index(config,output_fasta,output_gtf,spiked_dir):
     cmd += " --genomeFastaFiles {}".format(final_fa)
     cmd += " --sjdbGTFfile {}".format(final_gtf)
     cmd += " --sjdbOverhang 74"
+    if "tmp_dir" in config["paths"]:
+        cmd += " --outTmpDir {}".format(config["paths"]["tmp_dir"])
     systemcall(cmd)
 
     # Create sequence dictionaries (for piccard)
     # cmd = "srun --mem 80000 -p develop java -Xmx8g -jar /cm/shared/apps/picard-tools/1.140/picard.jar"
     picard_jar="picard" # can be installed via bioconda
+    output_dict=os.path.join(spiked_dir, "spiked.dict")
     cmd = picard_jar
     cmd += " CreateSequenceDictionary"
     cmd += " REFERENCE={}".format(final_fa)
-    cmd += " OUTPUT={}".format(os.path.join(spiked_dir, "spiked.dict"))
+    cmd += " OUTPUT={}".format(output_dict)
     #cmd += " GENOME_ASSEMBLY={}".format(genome)
     #cmd += " SPECIES=human"
     systemcall(cmd)
@@ -158,10 +162,13 @@ def build_star_index(config,output_fasta,output_gtf,spiked_dir):
     #dropseq_jar=config['program']['dropseqjar']
     #cmd = "java -Xmx80g -jar "+dropseq_jar+" ConvertToRefFlat"
     #cmd = "java -Xmx80g -jar ~/Drop-seq_tools-1.12/jar/dropseq.jar ConvertToRefFlat"
+    #dict:os.path.join(spiked_dir, "Homo_sapiens.GRCh38.dna.primary_assembly.spiked.dict")
+    #refflat:os.path.join(spiked_dir, "Homo_sapiens.GRCh38.dna.primary_assembly.spiked.refFlat")
+    output_refflat=os.path.join(spiked_dir, "spiked.refFlat")
     cmd = "ConvertToRefFlat "
-    cmd += " SEQUENCE_DICTIONARY={}".format(os.path.join(spiked_dir, "Homo_sapiens.GRCh38.dna.primary_assembly.spiked.dict"))
-    cmd += " ANNOTATIONS_FILE= {}".format(os.path.join(spiked_dir, "Homo_sapiens.GRCh38.77.spiked.gtf"))
-    cmd += " OUTPUT={}".format(os.path.join(spiked_dir, "Homo_sapiens.GRCh38.dna.primary_assembly.spiked.refFlat"))
+    cmd += " SEQUENCE_DICTIONARY={}".format(output_dict)
+    cmd += " ANNOTATIONS_FILE= {}".format(final_gtf)
+    cmd += " OUTPUT={}".format(output_refflat)
     systemcall(cmd)
 
     # Remove vanilla genome
@@ -170,7 +177,8 @@ def build_star_index(config,output_fasta,output_gtf,spiked_dir):
 
 def main():
   config=read_config(sys.argv[1])
-  generate_annotations(config,sys.argv[2],sys.argv[3])
+  sgrnafile=config["metadata"]["sgrna_table"]
+  generate_annotations(config,sgrnafile)
 
 if __name__ == '__main__':
   try:

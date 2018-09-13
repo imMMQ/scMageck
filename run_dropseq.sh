@@ -8,7 +8,7 @@
 #$ -cwd
 
 # step 1: generate reference index
-python generate_ref.py metadata/config.yaml metadata/test_sgrna.txt /lustre/groups/vilaingrp/wei_li/tmp/
+python generate_ref.py metadata/config.yaml 
 
 # step 2: fastq to bam
 
