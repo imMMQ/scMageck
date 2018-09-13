@@ -1,14 +1,14 @@
 
 paths:
   # output_dir: ABSOLUTE PATH to the parent, shared space where project results go
-  output_dir: /lustre/groups/vilaingrp/wei_li/tmp 
+  output_dir: /lustre/groups/vilaingrp/wei_li/tmp2 
   # an optional tmp dir
   tmp_dir: /lustre/groups/vilaingrp/wei_li/tmp
 
 fastq:
   # the path to the output fastq file
-  fq1: sample1_R1.fq
-  fq2: sample1_R2.fq
+  fq1: /home/wei_li/bitbucket/cropseqpipeline/demo/fastq/test_1.fq
+  fq2: /home/wei_li/bitbucket/cropseqpipeline/demo/fastq/test_2.fq
   label: sample1
 
 metadata:
