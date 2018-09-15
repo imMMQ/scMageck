@@ -32,10 +32,10 @@ class parameters:
   trim_sequence="AAGCAGTGGTATCAACGCAGAGTGAATGGG"
   trim_sequence_length=5
   polya_size=6
-  min_genes_per_cell=[500,100,10]
+  min_genes_per_cell=[10,50,100,500]
   #  - 100
   #  # - 10
-  repair_barcodes=True
+  repair_barcodes=False
   number_seq_error_barcodes_check=10000000
   bead_primer_sequence="AAGCAGTGGTATCAACGCAGAGTAC"
   distance_to_bead_primer_seq=0
