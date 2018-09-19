@@ -22,6 +22,9 @@ genomes:
   fa: /home/wei_li/bitbucket/cropseqpipeline/demo/ref/chr22.fa
   # ABSOLUTE path of reference GTF
   gtf: /home/wei_li/bitbucket/cropseqpipeline/demo/ref/Homo_sapiens.GRCh38.77.chr22.gtf
+  # for a full reference genome and GTF, download from ensembl. For example,
+  # ftp://ftp.ensembl.org/pub/release-77/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+  # ftp://ftp.ensembl.org/pub/release-77/gtf/homo_sapiens/Homo_sapiens.GRCh38.77.gtf.gz
 
 # CROP-seq plasmid sequences
 crop-seq:
