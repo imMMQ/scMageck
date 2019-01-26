@@ -26,6 +26,7 @@ def crop_parseargs():
   parser.add_argument('-n','--output-prefix',default='sample1',help='The prefix of the output file(s). Default sample1.')
 
   parser.add_argument('-l','--lib-grna',required=True,help='A gRNA library file containing the list of sgRNA names, their sequences and associated genes, separated by tab.')
+  parser.add_argument('--no-reverse-complement',action='store_true',help='Do not perform reverse complement search of sgRNAs.')
   parser.add_argument('-m','--max-mismatch',type=int,default=2,help='Maximum number of mismatches to be considered in sgRNA search. Default 2. Not recommended for values greater than 2. Decrease this value to speed up the search.')
   parser.add_argument('--anchor-before',default='GAAACACCG',help='Anchor sequence before the sgRNA. Default GAAACACCG (at the end of U6 promoter).')
   parser.add_argument('--anchor-after',default='GTTTTAGAG',help='Anchor sequence after the sgRNA. Default GTTTTAGAG.')
@@ -59,6 +60,18 @@ def crop_parseargs():
   return args
 
 
+# two versions of rev comp, depending on different versions of python
+'''
+Reverse complement
+'''
+if sys.version_info >= (3,1):
+  trans_table=str.maketrans("ACGT","TGCA")
+  def count_revcomp(x):
+    return x.translate(trans_table)[::-1]
+else:
+  trans_table=string.maketrans("ACGT","TGCA")
+  def count_revcomp(x):
+    return x.translate(trans_table)[::-1]
 #u6_before='GAAACACCG'
 #u6_after='GTTTTAGAG'
 # get grna_list
@@ -163,6 +176,7 @@ def search_sequence(line,gr_count,grdict,gmismatchdict,args):
     True/False whether a hit was found
 	  
   """
+  #line=count_revcomp(line)
   # u6 before or u6 after must be present
   u6_before=args.anchor_before
   u6_after=args.anchor_after
@@ -193,7 +207,10 @@ def process_fastq_files(in_fqfile,grdict,gmismatchdict,args):
       nl+=1
       if nl%4!=2:
         continue
-      search_sequence(line,gr_count,grdict,gmismatchdict,args)
+      hashit=search_sequence(line,gr_count,grdict,gmismatchdict,args)
+      if hashit==False and args.no_reverse_complement == False:
+        line=count_revcomp(line)
+        search_sequence(line,gr_count,grdict,gmismatchdict,args)
     
     nct=0
     for (sg,ct) in gr_count.items():
