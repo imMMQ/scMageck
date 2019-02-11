@@ -296,7 +296,7 @@ def output_to_file(args,gr_count_dict,grdict):
       print('\t'.join([in_fqfile]+[str(gr_count[sg]) for sg in grdict_k]),file=outff)
   elif args.file_type=='paired-fastq':
     # this would be a {cell_bc:{sgrna:{umi:count}}} structure
-    print('cell\tbarcode\tread_count\tumi_count\n',file=outff)
+    print('cell\tbarcode\tread_count\tumi_count',file=outff)
     for (cell_bc, c_dict) in gr_count_dict.items():
       for (sg, sgcnt) in c_dict.items():
         umi_count=len(sgcnt)
