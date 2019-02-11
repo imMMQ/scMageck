@@ -25,7 +25,8 @@ def crop_parseargs():
   
   parser.add_argument('-n','--output-prefix',default='sample1',help='The prefix of the output file(s). Default sample1.')
 
-  parser.add_argument('-l','--lib-grna',required=True,help='A gRNA library file containing the list of sgRNA names, their sequences and associated genes, separated by tab.')
+  parser.add_argument('--lib-grna',required=True,help='A gRNA library file containing the list of sgRNA names, their sequences and associated genes, separated by tab.')
+  parser.add_argument('--file-type',required=True,choices=['fastq','bam','paired-fastq'],default='fastq',help='The type of the file to search guide RNA sequence. ')
   parser.add_argument('--no-reverse-complement',action='store_true',help='Do not perform reverse complement search of sgRNAs.')
   parser.add_argument('-m','--max-mismatch',type=int,default=2,help='Maximum number of mismatches to be considered in sgRNA search. Default 2. Not recommended for values greater than 2. Decrease this value to speed up the search.')
   parser.add_argument('--anchor-before',default='GAAACACCG',help='Anchor sequence before the sgRNA. Default GAAACACCG (at the end of U6 promoter).')
@@ -159,21 +160,21 @@ def process_library_file(args):
   logging.info('Total gRNA:'+str(len(grna)))
   return grna
 
-def search_sequence(line,gr_count,grdict,gmismatchdict,args):
+def search_sequence(line,grdict,gmismatchdict,args):
   """
   Perform sequence search between anchor_before and anchor_after
   Parameters
     line
       a sequence to be search
-    gr_count
-      a dictionary to be updated if a hit was found
     grdict
     gmismatchdict
       a dictionary of {sgrna_name:[sequence]}
     args
       arguments
   Returns
-    True/False whether a hit was found
+    (found_rec, found_seq)
+    found_rec: True/False whether a hit was found
+    found_seq: the list of matched gRNA sequences. May contain more than 1 sequence 
 	  
   """
   #line=count_revcomp(line)
@@ -181,13 +182,15 @@ def search_sequence(line,gr_count,grdict,gmismatchdict,args):
   u6_before=args.anchor_before
   u6_after=args.anchor_after
   if u6_before not in line and u6_after not in line:
-    return 0
+    return (False,[])
   # first, count perfect matches
   found_rec=False
+  found_seq=[]
   for (gn,gseqlist) in grdict.items():
     for gseq in gseqlist:
       if u6_before+gseq in line or gseq+u6_after in line:
-        gr_count[gn]+=1
+        #gr_count[gn]+=1
+        found_seq+=[gn]
         found_rec=True
         break
   # if perfect matches are not found, go to the next time-consuming step for mismatches 
@@ -195,22 +198,81 @@ def search_sequence(line,gr_count,grdict,gmismatchdict,args):
     for (gn,gseqlist) in gmismatchdict.items():
       for gseq in gseqlist:
         if u6_before+gseq in line or gseq+u6_after in line:
-          gr_count[gn]+=1
+          #gr_count[gn]+=1
+          found_seq+=[gn]
           found_rec=True
           break
-  return found_rec
+  return (found_rec,found_seq)
+  
+def process_pair_fastq_files(in_fqfile1,in_fqfile2,grdict,gmismatchdict,args):
+    """
+    Process a paired-end fastq files and search for possible hits.
+    In 10X genomics platform, fq_file1 is usually the the file that contains molecular and cellular barcode, and fq_file2 is the actual RNA sequence
+    """
+    # use to determine cell barcode and umi barcode start and end; should place to argparse later
+    cell_barcode_start=0
+    cell_barcode_end=15
+    umi_barcode_start=16
+    umi_barcode_end=25
+    
+    nl=0
+    #gr_count={s:0 for s in grdict.keys()}
+    gr_count_universal={} # return {cell_bc:{sgRNA:{umi_bc:cnt}}} structure
+    in_fqfile1_f=open(in_fqfile1)
+    
+    for line in open(in_fqfile2):
+      nl+=1
+      line_1st=in_fqfile1_f.readline().strip()
+      if nl%4!=2:
+        continue
+      (hashit,found_seqlist)=search_sequence(line,grdict,gmismatchdict,args)
+      if hashit==False and args.no_reverse_complement == False:
+        line=count_revcomp(line)
+        (hashit,found_seqlist)=search_sequence(line,grdict,gmismatchdict,args)
+      if hashit:
+        cell_bc=line_1st[cell_barcode_start:(cell_barcode_end+1)]
+        umi_bc=line_1st[umi_barcode_start:(umi_barcode_end+1)]
+        if cell_bc not in gr_count_universal:
+          gr_count_universal[cell_bc]={}
+        #if umi_bc not in gr_count_universal[cell_bc]:
+        #  gr_count_universal[cell_bc][umi_bc]=0
+        gr_count=gr_count_universal[cell_bc]
+        for fs in found_seqlist:
+          if fs not in gr_count:
+            gr_count[fs]={}
+          if umi_bc not in gr_count[fs]:
+            gr_count[fs][umi_bc]=0
+          gr_count[fs][umi_bc]+=1
+    # end for
+    nct=0
+    for (cell_bc,c_dict) in gr_count_universal.items():
+      for (sg,umicnt) in c_dict.items():
+        ct=len(umicnt) # this is the number of umis
+        if ct>0:
+          print(cell_bc+'\t'+sg+'\t'+str(ct))
+          nct+=ct
+    logging.info(str(nct)+' umis found..')
+    return gr_count_universal
  
+
 def process_fastq_files(in_fqfile,grdict,gmismatchdict,args):
+    """
+    Process a single-end fastq file and search for possible hits
+    """
     nl=0
     gr_count={s:0 for s in grdict.keys()}
     for line in open(in_fqfile):
       nl+=1
       if nl%4!=2:
         continue
-      hashit=search_sequence(line,gr_count,grdict,gmismatchdict,args)
+      (hashit,found_seqlist)=search_sequence(line,grdict,gmismatchdict,args)
+      for fs in found_seqlist:
+        gr_count[fs]+=1
       if hashit==False and args.no_reverse_complement == False:
         line=count_revcomp(line)
-        search_sequence(line,gr_count,grdict,gmismatchdict,args)
+        (hashit,found_seqlist)=search_sequence(line,grdict,gmismatchdict,args)
+        for fs in found_seqlist:
+          gr_count[fs]+=1
     
     nct=0
     for (sg,ct) in gr_count.items():
@@ -226,11 +288,22 @@ def output_to_file(args,gr_count_dict,grdict):
   """  
   out_file=args.output_prefix+'.output.txt'
   outff=open(out_file,'w')
-  grdict_k=[x for x in grdict.keys()]
-  print('\t'.join(['sample']+grdict_k),file=outff)
-  for in_fqfile in gr_count_dict.keys():
-    gr_count=gr_count_dict[in_fqfile]
-    print('\t'.join([in_fqfile]+[str(gr_count[sg]) for sg in grdict_k]),file=outff)
+  if args.file_type=='fastq':
+    grdict_k=[x for x in grdict.keys()]
+    print('\t'.join(['sample']+grdict_k),file=outff)
+    for in_fqfile in gr_count_dict.keys():
+      gr_count=gr_count_dict[in_fqfile]
+      print('\t'.join([in_fqfile]+[str(gr_count[sg]) for sg in grdict_k]),file=outff)
+  elif args.file_type=='paired-fastq':
+    # this would be a {cell_bc:{sgrna:{umi:count}}} structure
+    print('cell\tbarcode\tread_count\tumi_count\n',file=outff)
+    for (cell_bc, c_dict) in gr_count_dict.items():
+      for (sg, sgcnt) in c_dict.items():
+        umi_count=len(sgcnt)
+        rcount=0
+        for (umi, cnt) in sgcnt.items():
+          rcount+=cnt
+        print('\t'.join([cell_bc,sg,str(rcount),str(umi_count)]),file=outff)
   
   outff.close()
 
@@ -252,10 +325,18 @@ if __name__ == '__main__':
   gr_count_dict={}
 
   # process file
-  for in_fqfile in in_fqfilelist:
-    logging.info('Processing file '+in_fqfile)
-    gr_count=process_fastq_files(in_fqfile,grdict,gmismatchdict,args)
-    gr_count_dict[in_fqfile]=gr_count
+  if args.file_type=='fastq':
+    for in_fqfile in in_fqfilelist:
+      logging.info('Processing file '+in_fqfile)
+      gr_count=process_fastq_files(in_fqfile,grdict,gmismatchdict,args)
+      gr_count_dict[in_fqfile]=gr_count
+  elif args.file_type=='paired-fastq':
+    if len(in_fqfilelist)%2 != 0 or len(in_fqfilelist)<2:
+      logging.error('Must provide two paired files for each sample.')
+      sys.exit(-1)
+    logging.info('First file:'+in_fqfilelist[0])
+    logging.info('Second file:'+in_fqfilelist[1])
+    gr_count_dict=process_pair_fastq_files(in_fqfilelist[0],in_fqfilelist[1],grdict,gmismatchdict,args)
    
   # output to file
   output_to_file(args,gr_count_dict,grdict)
