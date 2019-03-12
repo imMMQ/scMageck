@@ -43,6 +43,7 @@ getsolvedmatrix_with_permutation_cell_label<-function(Xm,Ym,lambda=0.01,npermuta
   return (list(Amat_ret,Amat_ret_higher))
 }
 
+
 # construct a matrix of Y=XA, Y= (cells*expressed genes), X=(cells* KO genes), A=(KO genes * expressed genes)
 
 single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingControlGuideForHuman'),indmatrix=NULL){
@@ -54,6 +55,7 @@ single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingCont
     select_cells=rownames(targetobj@meta.data)[which(!is.na(targetobj@meta.data$geneID))]
   }else{
     select_cells=rownames(indmatrix)
+    select_cells=select_cells[select_cells %in% colnames(targetobj@scale.data)]
   }
   YmatT=targetobj@scale.data[select_genes,select_cells]
   
@@ -83,6 +85,7 @@ single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingCont
         Xmat[cellns,cnl]=1
       }
     }
+    Xmat[,'NegCtrl']=1
     
   }# end if
   
@@ -352,4 +355,24 @@ prepare_matrix_for_pair_reg_indmat<-function(targetobj,ind_matrix,Xmat,Ymat,Amat
   }
   
   return (list(Xmat_db,Ymat_db_residule,select_pair_genes))
+}
+
+
+frame2indmatrix<-function(bc_d,targetobj){
+  rnm=unique(bc_d$cell)
+  cnm=unique(bc_d$gene)
+  rnm=rnm[!is.na(rnm)]
+  rnm=rnm[rnm%in%colnames(targetobj@scale.data)]
+  cnm=cnm[!is.na(cnm)]
+  ind_matrix=matrix(rep(FALSE,length(rnm)*length(cnm)),nrow=length(rnm))
+  rownames(ind_matrix)=rnm
+  colnames(ind_matrix)=cnm
+  for(si in 1:nrow(bc_d)){
+    t_r=bc_d[si,'cell']
+    t_c=bc_d[si,'gene']
+    if((t_r%in%rnm) & (t_c%in% cnm)){
+      ind_matrix[t_r,t_c]=TRUE
+    }
+  }
+  return (ind_matrix)
 }
