@@ -196,7 +196,7 @@ test_sc_in_gsea<-function(targetobj, gs_test=gs_c2_exps, select_gs_names=NULL,pa
 }
 
 
-test_sc_in_rra<-function(targetobj,  gs_test=gs_c2_exps, select_gs_names=NULL,padjcutoff=0.25,gsea_cutoff=0.3,negctrlgenelist='NonTargetingControlGuideForHuman',rra_path=NULL){
+test_sc_in_rra<-function(targetobj,  gs_test=gs_c2_exps, select_gs_names=NULL,padjcutoff=0.25,gsea_cutoff=0.3,negctrlgenelist='NonTargetingControlGuideForHuman',rra_path=NULL,tmpprefix='sample1'){
   #select_gs_names=grep('^KEGG|^BIOCARTA|^REACTOME|^PID',gs_c2$names,invert = T)
   #padjcutoff=0.01
   if(is.null(select_gs_names)){
@@ -233,7 +233,7 @@ test_sc_in_rra<-function(targetobj,  gs_test=gs_c2_exps, select_gs_names=NULL,pa
     texp=colSums(texp_mat)
     texp=sort(texp)
     
-    rept_frm=get_rank_tables_from_rra(texp,bc_dx_ttb,rrapath = rra_path,negctrlgenelist = negctrlgenelist )
+    rept_frm=get_rank_tables_from_rra(texp,bc_dx_ttb,rrapath = rra_path,negctrlgenelist = negctrlgenelist,tmpprefix=tmpprefix )
     
     
     nsel=which(#report_neg$gene!='TP53'& 
