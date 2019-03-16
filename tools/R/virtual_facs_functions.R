@@ -40,7 +40,7 @@ get_rank_tables<-function(genes_to_rank,negctrlgenelist='NonTargetingControlGuid
 }
 
 
-get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix='sample1',negctrlgenelist='NonTargetingControlGuideForHuman'){
+get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix='sample1',negctrlgenelist='NonTargetingControlGuideForHuman',more_rra=''){
   rankexp=rankexp[names(rankexp)%in%rownames(bc_dox_u) & !is.na(bc_dox_u[names(rankexp),'oligo'])]
   if(length(rankexp)<3){
     print('Error: cannot find enough cells.')
@@ -84,7 +84,7 @@ get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmp
               '-o',rra_low_out,
               ngguidecommand,
               '-p',pcutoff,
-              '--max-sgrnapergene-permutation 10000')
+              '--max-sgrnapergene-permutation 10000 ',more_rra)
   print(rra_c)
   system(rra_c,ignore.stdout = TRUE,ignore.stderr = TRUE)
   
@@ -93,13 +93,13 @@ get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmp
               '-o',rra_high_out,
               ngguidecommand,
               '-p',pcutoff,
-              '--max-sgrnapergene-permutation 10000')
+              '--max-sgrnapergene-permutation 10000 ',more_rra)
   print(rra_c)
   system(rra_c,ignore.stdout = TRUE,ignore.stderr = TRUE)
   
   # merge both
-  frame_l=read.table(rra_low_out,header = T,as.is = T,row.names = 1)
-  frame_h=read.table(rra_high_out,header = T,as.is = T,row.names = 1)
+  frame_l=read.table(rra_low_out,header = T,as.is = T,row.names = 1,na.strings = '')
+  frame_h=read.table(rra_high_out,header = T,as.is = T,row.names = 1,na.strings = '')
   
   
   report_f=merge(frame_l,frame_h,by=0,suffixes=c('.low','.high'))
