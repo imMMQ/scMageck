@@ -40,7 +40,7 @@ get_rank_tables<-function(genes_to_rank,negctrlgenelist='NonTargetingControlGuid
 }
 
 
-get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix='sample1',negctrlgenelist='NonTargetingControlGuideForHuman',more_rra=''){
+get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),negctrlgenelist='NonTargetingControlGuideForHuman',more_rra=''){
   rankexp=rankexp[names(rankexp)%in%rownames(bc_dox_u) & !is.na(bc_dox_u[names(rankexp),'oligo'])]
   if(length(rankexp)<3){
     print('Error: cannot find enough cells.')
