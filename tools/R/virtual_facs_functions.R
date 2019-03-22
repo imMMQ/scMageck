@@ -103,17 +103,17 @@ get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmp
   
   # merge both
   if(negsel){
-  frame_l=read.table(rra_low_out,header = T,as.is = T,row.names = 1,na.strings = '')
+    frame_l=read.table(rra_low_out,header = T,as.is = T,row.names = 1,na.strings = '')
   }
   if(possel){
-  frame_h=read.table(rra_high_out,header = T,as.is = T,row.names = 1,na.strings = '')
+    frame_h=read.table(rra_high_out,header = T,as.is = T,row.names = 1,na.strings = '')
   }
   
   if(negsel & !possel){
-	  return (frame_l)
+    return (frame_l)
   }
   if(!negsel & possel){
-	  return (frame_h)
+    return (frame_h)
   }
   report_f=merge(frame_l,frame_h,by=0,suffixes=c('.low','.high'))
   
