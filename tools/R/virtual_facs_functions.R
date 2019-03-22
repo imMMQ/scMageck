@@ -40,7 +40,7 @@ get_rank_tables<-function(genes_to_rank,negctrlgenelist='NonTargetingControlGuid
 }
 
 
-get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),negctrlgenelist='NonTargetingControlGuideForHuman',more_rra=''){
+get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),negctrlgenelist='NonTargetingControlGuideForHuman',more_rra='',negsel=T,possel=T){
   rankexp=rankexp[names(rankexp)%in%rownames(bc_dox_u) & !is.na(bc_dox_u[names(rankexp),'oligo'])]
   if(length(rankexp)<3){
     print('Error: cannot find enough cells.')
@@ -85,8 +85,10 @@ get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmp
               ngguidecommand,
               '-p',pcutoff,
               '--max-sgrnapergene-permutation 10000 ',more_rra)
+  if(negsel){
   print(rra_c)
   system(rra_c,ignore.stdout = TRUE,ignore.stderr = TRUE)
+  }
   
   rra_high_out=paste(tmpprefix,'_rra_high.out',sep='')
   rra_c=paste(rracommand,'-i', high_file,
@@ -94,14 +96,25 @@ get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmp
               ngguidecommand,
               '-p',pcutoff,
               '--max-sgrnapergene-permutation 10000 ',more_rra)
+  if(possel){
   print(rra_c)
   system(rra_c,ignore.stdout = TRUE,ignore.stderr = TRUE)
+  }
   
   # merge both
+  if(negsel){
   frame_l=read.table(rra_low_out,header = T,as.is = T,row.names = 1,na.strings = '')
+  }
+  if(possel){
   frame_h=read.table(rra_high_out,header = T,as.is = T,row.names = 1,na.strings = '')
+  }
   
-  
+  if(negsel & !possel){
+	  return (frame_l)
+  }
+  if(!negsel & possel){
+	  return (frame_h)
+  }
   report_f=merge(frame_l,frame_h,by=0,suffixes=c('.low','.high'))
   
   system(paste('rm',low_file,high_file,rra_low_out,rra_high_out))
