@@ -1,0 +1,12 @@
+library(Seurat)
+source('~/bitbucket/scmageck/tools/R/virtual_facs_functions.R')
+targetobj<-readRDS('/home/wei_li/weili/CROPSeq/Shendure/nm18/pairko/singles_dox_100nm_SI.RDS')
+targetobj2=targetobj
+selgene=read.table('test_sgrna.txt',header=T,as.is=T)[,3]
+selgene=c(unique(selgene),'MKI67')
+selgene=selgene[selgene%in%rownames(targetobj@scale.data)]
+targetobj2@raw.data=targetobj2@raw.data[selgene,]
+targetobj2@scale.data=targetobj2@scale.data[selgene,]
+#setwd('weili/CROPSeq/Shendure/nm18/pairko/test/')
+targetobj2@data=targetobj2@data[selgene,]
+saveRDS(targetobj2,file='singles_dox_mki67.RDS')
