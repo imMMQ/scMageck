@@ -27,8 +27,8 @@ getsolvedmatrix_with_permutation_cell_label<-function(Xm,Ym,lambda=0.01,npermuta
   # permute N times
   # randomly shuffle cell labels
   for(npm in 1:npermutation){
-    if(npm%%10==0){
-      print(paste(npm,'...'))
+    if(npm%%100==0){
+      print(paste('Permutation:',npm,'/',npermutation,'...'))
     }
     cells_shu=sample(rownames(Ym),nrow(Ym))
     Xm_s=Xm[cells_shu,]
@@ -46,11 +46,13 @@ getsolvedmatrix_with_permutation_cell_label<-function(Xm,Ym,lambda=0.01,npermuta
 
 # construct a matrix of Y=XA, Y= (cells*expressed genes), X=(cells* KO genes), A=(KO genes * expressed genes)
 
-single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingControlGuideForHuman'),indmatrix=NULL){
+single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingControlGuideForHuman'),indmatrix=NULL,high_gene_frac=0.01){
   # return X matrix and Y matrix for regression
   # note that all the ngctrlgene are merged into one column, "NegCtrl"
   # if indmatrix is provided, the Xmat will be constructed from indmatrix
-  select_genes=rownames(targetobj@raw.data)[ which(rowSums(as.matrix(targetobj@raw.data)!=0)>ncol(targetobj@raw.data)/100)]
+  select_genes=rownames(targetobj@raw.data)[ which(rowSums(as.matrix(targetobj@raw.data)!=0)>=ncol(targetobj@raw.data)*high_gene_frac)]
+  print(paste('Selected genes:',length(select_genes)))
+  # browser()
   if(is.null(indmatrix)){
     select_cells=rownames(targetobj@meta.data)[which(!is.na(targetobj@meta.data$geneID))]
   }else{

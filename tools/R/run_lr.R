@@ -3,11 +3,11 @@
 # --BARCODE
 # --LIBRARY
 # --RDS
-# --GENE
+# --NEGCTRL
 #
 # Optional options
-# --RRAPATH
 # --LABEL
+# --PERMUTATION
 #
 library(R.utils)
 library(Seurat)
@@ -29,25 +29,16 @@ print(script.basename)
 
 #source('gseafunc.R')
 function_script=file.path(script.basename,'virtual_facs_functions.R')
-#print(paste('func script:',function_script))
 source(function_script)
-
-# determine the path of RRA
-
-#RRAPATH='/home/wei_li/.conda/envs/py3k/bin/RRA'
-RRAPATH=ifelse(is.null(args[['RRAPATH']]),'RRA',args['RRAPATH'])
-print('Checking RRA...')
-#print(RRAPATH)
-if(system(RRAPATH,ignore.stdout = TRUE, ignore.stderr = TRUE)!=0){
-  print(paste('Error: cannot find RRA in ',RRAPATH,'. Please specify the path of RRA (in MAGeCK)'))
-  quit()
-}
-
+function_script=file.path(script.basename,'multiple_guides_function.R')
+source(function_script)
 
 #quit()
 
+# optional parameters ####
 
 data_label=ifelse(is.null(args['LABEL']),'sample1',args['LABEL'])
+n_permutation=ifelse(is.null(args['PERMUTATION']),10000,as.integer(args['PERMUTATION']))
 
 # read cell assignment and libray file ####
 
@@ -70,44 +61,43 @@ ncnt=table(table(bc_dox$cell))
 #print(ncnt)
 #barplot(ncnt)
 
-# only leave cells with unique guides ####
-
-dupsq=bc_dox[duplicated(bc_dox$cell),1]
-bc_dox_uq=bc_dox[!bc_dox[,1]%in%dupsq,]
-rownames(bc_dox_uq)=bc_dox_uq[,1]
 
 print(paste('Total barcode records:',nrow(bc_dox)))
-print(paste('Unique barcode records:',nrow(bc_dox_uq)))
 
-# test target genes ####
+# load neg control guides ####
 
-target_gene_list=strsplit(args[['GENE']],',')[[1]]
-print(paste('Target gene:',paste(target_gene_list,collapse=';')))
-
+#ngctrlgenelist=read.table(args[['NEGCTRL']],header=F,as.is=T)[,1]
+ngctrlgenelist=strsplit(args[['NEGCTRL']],',')[[1]]
+print(paste('Neg Ctrl guide:',paste(ngctrlgenelist,collapse=';')))
 
 # read Seurat RDS file ####
 
 print(paste("Reading RDS file:",args[['RDS']]))
 targetobj=readRDS(args[['RDS']])
 
-# run RRA ####
+# convert to ind_matrix ####
 
-for(target_gene in target_gene_list){
-  if(!target_gene%in%rownames(targetobj@scale.data)){
-    print(paste('Warning: gene ',target_gene,' not in expression list.'))
-    next
-  }else{
-    print(paste('Testing gene ',target_gene,'...'))
-  }
-  texp=targetobj@scale.data[target_gene,]
-  texp=sort(texp)
-  texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'oligo'])]
+ind_matrix<-frame2indmatrix(bc_dox,targetobj)
 
-  other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH)
+print(paste('Index matrix dimension:',nrow(ind_matrix),',',ncol(ind_matrix)))
 
-  write.table(other_table,file=paste(data_label,'_',target_gene,'_RRA.txt',sep=''),sep='\t',quote=F,row.names=F)
 
-}
+#save(list=ls(),file='tmp.RData')
+# try to perform matrix regresson on single genes ####
+
+mat_for_single_reg=single_gene_matrix_regression(targetobj,ngctrlgene=ngctrlgenelist,indmatrix=ind_matrix,high_gene_frac=-1.00)
+Xmat=mat_for_single_reg[[1]]
+#
+# Xmat[,which(colnames(Xmat)%in%ngctrlgenelist)[1]]=1 # already integrated into function
+
+Ymat=mat_for_single_reg[[2]]
+Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,npermutation = n_permutation)
+Amat=Amat_pm_lst[[1]]
+Amat_pval=Amat_pm_lst[[2]]
+
+save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
+write.table(Amat,file=paste(data_label,'_score.txt',sep=''),sep='\t',quote=F,row.names=T)
+write.table(Amat_pval,file=paste(data_label,'_score_pval.txt',sep=''),sep='\t',quote=F,row.names=T)
 
 
 

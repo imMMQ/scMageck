@@ -1,8 +1,16 @@
-# CROPSeqPipeline
+# scMAGeCK
 
-Dependencies (available via bioconda channel)
+# Installation
+
+## Dependencies (available via bioconda channel)
+
+* R (with Seurat)
+
+# Demos
+
+## Demo 
 
 
-# * picard
-* pyYAML
-* dropseq_tools
+# Usage
+
+
