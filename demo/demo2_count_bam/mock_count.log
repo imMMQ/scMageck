@@ -1,0 +1,10 @@
+INFO  @ Mon, 06 May 2019 16:20:42: Parameters: ../../cropseq_count.py --lib-grna sgrna_lib.txt -n mock_count --file-type bam --files singles_mock_amp_unmapped_300k.bam -m 0 
+INFO  @ Mon, 06 May 2019 16:20:42: Total number of files:1 
+INFO  @ Mon, 06 May 2019 16:20:42: ['singles_mock_amp_unmapped_300k.bam'] 
+INFO  @ Mon, 06 May 2019 16:20:42: Total gRNA:183 
+INFO  @ Mon, 06 May 2019 16:20:42: Total sgRNAs:183 
+INFO  @ Mon, 06 May 2019 16:20:42: Total sgRNAs with mismatches:0 
+INFO  @ Mon, 06 May 2019 16:20:42: 1 mismatched sequences are skipped due to overlap with other sequences. 
+INFO  @ Mon, 06 May 2019 16:20:42: Processing file singles_mock_amp_unmapped_300k.bam 
+INFO  @ Mon, 06 May 2019 16:20:43: Total reads:499901 
+INFO  @ Mon, 06 May 2019 16:21:38: 37169 UMIs found.. 

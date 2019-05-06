@@ -4,7 +4,9 @@
 
 ## Dependencies (available via bioconda channel)
 
-* R (with Seurat)
+* pysam
+* R 
+* Seurat
 
 # Demos
 
