@@ -1,7 +1,6 @@
 # command line: Rscript run_individual_genes.R OPTIONS
 # Required options
 # --BARCODE
-# --LIBRARY
 # --RDS
 # --NEGCTRL
 #
@@ -45,14 +44,14 @@ n_permutation=ifelse(is.null(args['PERMUTATION']),10000,as.integer(args['PERMUTA
 #bc_dox=read.table(paste('../pairko/run_in_cluster/wl_get_barcodes_output_',data_label,'.txt',sep=''),header=T,as.is = T)
 #bc_gene=read.table('test_sgrna.txt',header=T,as.is = T)
 bc_dox=read.table(args[['BARCODE']],header=T,as.is=T)
-bc_gene=read.table(args[['LIBRARY']],header=T,as.is=T)
+#bc_gene=read.table(args[['LIBRARY']],header=T,as.is=T)
 
-rownames(bc_gene)=bc_gene[,2]
-n_doxinlib=sum(bc_dox$barcode%in%bc_gene$sequence)
-print(paste('Number of barcodes in library:',n_doxinlib))
+#rownames(bc_gene)=bc_gene[,2]
+#n_doxinlib=sum(bc_dox$barcode%in%bc_gene$sequence)
+#print(paste('Number of barcodes in library:',n_doxinlib))
 #dim(bc_dox)
 
-bc_dox[,c('oligo','gene')]=bc_gene[bc_dox$barcode,c('oligo','gene')]
+#bc_dox[,c('oligo','gene')]=bc_gene[bc_dox$barcode,c('oligo','gene')]
 bc_dox[,1]=sub('-\\d','',bc_dox[,1])
 
 guide_count=table(bc_dox$cell)

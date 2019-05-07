@@ -41,14 +41,14 @@ get_rank_tables<-function(genes_to_rank,negctrlgenelist='NonTargetingControlGuid
 
 
 get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),negctrlgenelist='NonTargetingControlGuideForHuman',more_rra='',negsel=T,possel=T){
-  rankexp=rankexp[names(rankexp)%in%rownames(bc_dox_u) & !is.na(bc_dox_u[names(rankexp),'oligo'])]
+  rankexp=rankexp[names(rankexp)%in%rownames(bc_dox_u) & !is.na(bc_dox_u[names(rankexp),'barcode'])]
   if(length(rankexp)<3){
     print('Error: cannot find enough cells.')
     return (NULL)
   }
   rankexp=sort(rankexp)
   
-  texp_guide_ass=bc_dox_u[names(rankexp),'oligo']
+  texp_guide_ass=bc_dox_u[names(rankexp),'barcode']
   texp_gene_ass=bc_dox_u[names(rankexp),'gene']
   texp_guide_ass1=paste(texp_guide_ass,1:length(texp_guide_ass),sep='_r')
   
@@ -236,7 +236,7 @@ test_sc_in_rra<-function(targetobj,  gs_test=gs_c2_exps, select_gs_names=NULL,pa
   bc_guide_ass=bc_guide_ass[!is.na(bc_gene_ass)]
   bc_gene_ass=bc_gene_ass[!is.na(bc_gene_ass)]
   
-  bc_dx_ttb=data.frame(cell=bc_dx_uq,oligo=bc_guide_ass,gene=bc_gene_ass)
+  bc_dx_ttb=data.frame(cell=bc_dx_uq,barcode=bc_guide_ass,gene=bc_gene_ass)
   rownames(bc_dx_ttb)=bc_dx_uq
   
   for(gs_pw in select_gs_names){
