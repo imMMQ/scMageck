@@ -2,7 +2,7 @@
 
 scMAGeCK is a computational model to interrogate genes associated multiple expression phenotypes from CRISPR screens coupled with single-cell sequencing data.
 
-scMAGeCK is based on our previous [MAGeCK](https://mageck.sourceforge.net) and MAGeCK-VISPR model for pooled CRISPR screens.
+scMAGeCK is based on our previous [MAGeCK](http://mageck.sourceforge.net) and MAGeCK-VISPR model for pooled CRISPR screens.
 
 # Installation
 
