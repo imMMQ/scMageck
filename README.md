@@ -48,7 +48,7 @@ to run this demo.
 
 The pipeline includes a program, "cropseq_count.py", to collect cell identity information from various file types (bam/fastq) and platforms.
 
-The first demo (demo1) contains an example of using this program.
+The second demo (demo2) contains an example of using this program.
 
     usage: cropseq_count.py [-h] [-v] [-n OUTPUT_PREFIX] --lib-grna LIB_GRNA
                         --file-type {fastq,bam,paired-fastq}
@@ -89,7 +89,7 @@ optional arguments:
 
 The R script "run_individual_genes.R"  provides an easy-to-run interface to test the association of gene knockout with certain marker expression.
 
-The second demon (demo2) contains an example of running this R script.
+The first demo (demo1) contains an example of running this R script.
 
     usage: Rscript run_individual_genes.R OPTIONS
 
@@ -115,11 +115,12 @@ optional arguments:
 
 The R script, "run_lr.R", provides an easy-to-run interface to use linear regression for the association of gene knockout with the expression of all the genes.
 
-The second demon (demo2) contains an example of running this R script.
+The first demo (demo1) contains an example of running this R script.
 
     usage: Rscript run_lr.R OPTIONS
 
 required arguments: 
+
     --BARCODE
                        A txt file to include cell identity information, generated from the cell identity collection step. 
     --RDS
@@ -128,6 +129,7 @@ required arguments:
                        The name of the genes (separated by ",") served as negative controls.
 
 optional arguments:
+
     --LABEL
                        The label of the output file.
     --PERMUTATION
