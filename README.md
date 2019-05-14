@@ -61,9 +61,10 @@ cropseq-count: counting sgRNAs from CROPseq experiments.
 
 required arguments:
 
-    --lib-grna LIB_GRNA   A gRNA library file containing the list of sgRNA
-                        names, their sequences and associated genes, separated
-                        by tab.
+    --lib-grna LIB_GRNA   
+                        A gRNA library file containing the list of sgRNA names, their sequences and associated genes, separated by tab.
+    --files FILES [FILES ...]
+                        A list of fastq files, SAM/BAM files, or a wildcard of filenames.
 
 optional arguments:
 
@@ -81,8 +82,6 @@ optional arguments:
                         Anchor sequence before the sgRNA. Default GAAACACCG (at the end of U6 promoter).
     --anchor-after ANCHOR_AFTER
                         Anchor sequence after the sgRNA. Default GTTTTAGAG.
-    --files FILES [FILES ...]
-                        A list of fastq files, SAM/BAM files, or a wildcard of filenames.
 
 
 ## Use RRA to test the association of gene knockout with certain marker expression
