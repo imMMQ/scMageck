@@ -1,10 +1,10 @@
-# command line: Rscript run_individual_genes.R OPTIONS
-# Required options
+# command line: Rscript run_lr.R OPTIONS
+# Required arguments
 # --BARCODE
 # --RDS
 # --NEGCTRL
 #
-# Optional options
+# Optional arguments
 # --LABEL
 # --PERMUTATION
 #
