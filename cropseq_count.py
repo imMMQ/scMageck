@@ -157,9 +157,14 @@ def process_input_files(args):
 def process_library_file(args): 
   grna_list_file=args.lib_grna
   grna=[line.strip().split() for line in open(grna_list_file)]
-  if len(grna[0])<3:
-    logging.error('Library file must be at least three fields including: gRNA_ID, sequence, gene_ID.')
-    sys.exit(-1)
+  ng=0
+  for grl in grna:
+    ng=ng+1
+    if len(grl)<3:
+      logging.error('Error in processing line'+str(ng)+':')
+      logging.error('\t'.join(grl))
+      logging.error('Library file must be at least three fields including: gRNA_ID, sequence, gene_ID.')
+      sys.exit(-1)
   grna=grna[1:] # skip the header
   logging.info('Total gRNA:'+str(len(grna)))
   return grna
