@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 '''
-count occurences in cropseq
-Usage:
-python custom_count.py filtered_fastq/bc0014.fastq
-or
-python custom_count.py "filtered_fastq/bc001*"
+Copyright (c) 2019 Wei Li laboratory (weililab.org)
+This code is free software; you can redistribute it and/or modify it
+under the terms of the BSD License (see the file COPYING included with
+the distribution).
+
+Special thanks to Andrew Hill on part of the source codes.
 '''
 
 import sys

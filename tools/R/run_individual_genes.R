@@ -91,14 +91,28 @@ targetobj=readRDS(args[['RDS']])
 
 # run RRA ####
 
+if('scale.data'%in%names(attributes(targetobj))){
+  scalef=targetobj@scale.data # for version 2
+}else if(  'assays'%in% names(attributes(targetobj))){
+  if('RNA'%in% names(targetobj@assays) & 
+       'scale.data'%in% names(attributes(targetobj@assays$RNA))){
+    scalef=targetobj@assays$RNA@scale.data
+  }else{
+    print(paste('Error: Cannot find scale.data in Seurat obj ',args[['RDS']]))
+  }
+}else{
+    print(paste('Error: Cannot find scale.data in Seurat obj ',args[['RDS']]))
+
+}
+
 for(target_gene in target_gene_list){
-  if(!target_gene%in%rownames(targetobj@scale.data)){
+  if(!target_gene%in%rownames(scalef)){
     print(paste('Warning: gene ',target_gene,' not in expression list.'))
     next
   }else{
     print(paste('Testing gene ',target_gene,'...'))
   }
-  texp=targetobj@scale.data[target_gene,]
+  texp=scalef[target_gene,]
   texp=sort(texp)
   texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
 
