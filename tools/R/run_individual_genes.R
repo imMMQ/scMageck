@@ -93,16 +93,8 @@ targetobj=readRDS(args[['RDS']])
 
 if('scale.data'%in%names(attributes(targetobj))){
   scalef=targetobj@scale.data # for version 2
-}else if(  'assays'%in% names(attributes(targetobj))){
-  if('RNA'%in% names(targetobj@assays) & 
-       'scale.data'%in% names(attributes(targetobj@assays$RNA))){
-    scalef=targetobj@assays$RNA@scale.data
-  }else{
-    print(paste('Error: Cannot find scale.data in Seurat obj ',args[['RDS']]))
-  }
 }else{
-    print(paste('Error: Cannot find scale.data in Seurat obj ',args[['RDS']]))
-
+  scalef=GetAssayData(object = targetobj, slot = "scale.data")
 }
 
 for(target_gene in target_gene_list){

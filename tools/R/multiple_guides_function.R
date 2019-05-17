@@ -4,6 +4,15 @@
 # /Users/weili/Dropbox/work/cropseq/Shendure/nmeth18/multiple_guides_function.R
 
 
+getscaledata<-function(targetobj){
+  if('scale.data'%in%names(attributes(targetobj))){
+    scalef=targetobj@scale.data # for version 2
+  }else{
+    scalef=GetAssayData(object = targetobj, slot = "scale.data")
+  }
+  return (scalef)
+}
+
 
 # perform matrix decomposition
 # get A for Y=XA
@@ -53,13 +62,16 @@ single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingCont
   select_genes=rownames(targetobj@raw.data)[ which(rowSums(as.matrix(targetobj@raw.data)!=0)>=ncol(targetobj@raw.data)*high_gene_frac)]
   print(paste('Selected genes:',length(select_genes)))
   # browser()
+
+  scalef=getscaledata(targetobj)
+
   if(is.null(indmatrix)){
     select_cells=rownames(targetobj@meta.data)[which(!is.na(targetobj@meta.data$geneID))]
   }else{
     select_cells=rownames(indmatrix)
-    select_cells=select_cells[select_cells %in% colnames(targetobj@scale.data)]
+    select_cells=select_cells[select_cells %in% colnames(scalef)]
   }
-  YmatT=targetobj@scale.data[select_genes,select_cells]
+  YmatT=scalef[select_genes,select_cells]
   
   Ymat=as.matrix(t(YmatT)) # (cells * expressed genes)
   if(is.null(indmatrix)){
@@ -114,8 +126,8 @@ plot_single_genes<-function(targetob,gene1,targetgene,haslog=TRUE,plotfigure=TRU
   #cell_gene2=rownames(targetob@meta.data)[which(targetob@meta.data$geneID==gene2)]
   #mg_geneid=paste(gene1,gene2,sep='_')
   #cell_merged=select_pair_genes[[mg_geneid]]
-  
-  t_exp=targetob@scale.data[targetgene,c(cell_ctrl,cell_gene1)]
+  scalef=getscaledata(targetobj) 
+  t_exp=scalef[targetgene,c(cell_ctrl,cell_gene1)]
   if(min(t_exp)<0){
     t_exp=t_exp-(min(t_exp))+0.1
   }
@@ -153,7 +165,9 @@ plot_gi_genes<-function(targetobj,gene1,gene2,targetgene,select_pair_genes,haslo
   cell_merged=cell_merged[cell_merged%in%rownames(targetobj@meta.data)]
   
   #browser()
-  t_exp=targetobj@scale.data[targetgene,c(cell_ctrl,cell_gene1,cell_gene2,cell_merged)]
+
+  scalef=getscaledata(targetobj)
+  t_exp=scalef[targetgene,c(cell_ctrl,cell_gene1,cell_gene2,cell_merged)]
   if(min(t_exp)<0){
     t_exp=t_exp-(min(t_exp))+0.1
   }
@@ -225,7 +239,10 @@ prepare_matrix_for_pair_reg<-function(targetobj,bc_dox,Xmat,Ymat,Amat,cell_cutof
     }
   }
   print(paste('finished calculating ',length(pair_genes),'pairs'))
-  
+
+ 
+  scalef=getscaledata(targetobj)
+ 
   pair_genes_length=unlist(lapply(pair_genes,length))
   
   select_pair_genes=names(pair_genes_length)[pair_genes_length>=cell_cutoff]
@@ -234,7 +251,7 @@ prepare_matrix_for_pair_reg<-function(targetobj,bc_dox,Xmat,Ymat,Amat,cell_cutof
   select_pair_genes=pair_genes[(select_pair_genes)]
   
   cells_combine=unique(unlist(select_pair_genes))
-  cells_combine=cells_combine[cells_combine%in% colnames(targetobj@scale.data)]
+  cells_combine=cells_combine[cells_combine%in% colnames(scalef)]
   
   print(paste('gene pairs left:',length(cells_combine)))
   
@@ -242,7 +259,7 @@ prepare_matrix_for_pair_reg<-function(targetobj,bc_dox,Xmat,Ymat,Amat,cell_cutof
   #select_genes=rownames(targetobj@raw.data)[ which(rowSums(targetobj@raw.data!=0)>ncol(targetobj@raw.data)/100)]
   select_genes=colnames(Ymat)
   select_cells=rownames(Ymat)
-  YmatT_db=targetobj@scale.data[select_genes,cells_combine]
+  YmatT_db=scalef[select_genes,cells_combine]
   
   Ymat_db=as.matrix(t(YmatT_db)) # (cells * expressed genes)
   #tgphenotype=targetobj@meta.data[select_cells,'geneID']
@@ -292,6 +309,7 @@ prepare_matrix_for_pair_reg_indmat<-function(targetobj,ind_matrix,Xmat,Ymat,Amat
   # Xmat, Ymat, Amat: these are regression for single genes
   # the gene and cell column in ind_matrix is used to determine the target of each cell
 
+  scalef=getscaledata(targetobj)
   # new code
   s_pair_x=c()
   s_pair_y=c()
@@ -310,14 +328,14 @@ prepare_matrix_for_pair_reg_indmat<-function(targetobj,ind_matrix,Xmat,Ymat,Amat
     }
   }
   cells_combine=names(cells_s)[which(cells_s>0)]
-  cells_combine=cells_combine[cells_combine%in% colnames(targetobj@scale.data)]
+  cells_combine=cells_combine[cells_combine%in% colnames(scalef)]
   
   
   # construct a matrix of Y=XA, Y= (cells*expressed genes), X=(cells* KO genes), A=(KO genes * expressed genes)
   #select_genes=rownames(targetobj@raw.data)[ which(rowSums(targetobj@raw.data!=0)>ncol(targetobj@raw.data)/100)]
   select_genes=colnames(Ymat)
   select_cells=rownames(Ymat)
-  YmatT_db=targetobj@scale.data[select_genes,cells_combine]
+  YmatT_db=scalef[select_genes,cells_combine]
   
   Ymat_db=as.matrix(t(YmatT_db)) # (cells * expressed genes)
   #tgphenotype=targetobj@meta.data[select_cells,'geneID']
@@ -361,10 +379,12 @@ prepare_matrix_for_pair_reg_indmat<-function(targetobj,ind_matrix,Xmat,Ymat,Amat
 
 
 frame2indmatrix<-function(bc_d,targetobj){
+
+  scalef=getscaledata(targetobj)
   rnm=unique(bc_d$cell)
   cnm=unique(bc_d$gene)
   rnm=rnm[!is.na(rnm)]
-  rnm=rnm[rnm%in%colnames(targetobj@scale.data)]
+  rnm=rnm[rnm%in%colnames(scalef)]
   cnm=cnm[!is.na(cnm)]
   ind_matrix=matrix(rep(FALSE,length(rnm)*length(cnm)),nrow=length(rnm))
   rownames(ind_matrix)=rnm

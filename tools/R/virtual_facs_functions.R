@@ -1,5 +1,13 @@
 # virtura_facs_functions
 
+getscaledata<-function(targetobj){
+  if('scale.data'%in%names(attributes(targetobj))){
+    scalef=targetobj@scale.data # for version 2
+  }else{
+    scalef=GetAssayData(object = targetobj, slot = "scale.data")
+  }
+  return (scalef)
+}
 
 get_rank_tables<-function(genes_to_rank,negctrlgenelist='NonTargetingControlGuideForHuman'){
   score_test=seq(-1.0,1.0,length.out = length(genes_to_rank))
@@ -143,6 +151,8 @@ test_sc_in_gsea<-function(targetobj, gs_test=gs_c2_exps, select_gs_names=NULL,pa
   r_cs$rpt=list()
   r_cs$dir=c()
   r_cs$pathway=c()
+
+  scalef=getscaledata(targetobj)
   
   for(gs_pw in select_gs_names){
     
@@ -155,7 +165,7 @@ test_sc_in_gsea<-function(targetobj, gs_test=gs_c2_exps, select_gs_names=NULL,pa
     gs_name=gs_test$names[gs_pw]
     print(gs_name)
     #target_gene='MKI67'
-    texp_mat=targetobj@scale.data[rownames(targetobj@scale.data)%in%gs_target[[1]],]
+    texp_mat=scalef[rownames(scalef)%in%gs_target[[1]],]
     texp=colSums(texp_mat)
     texp=sort(texp)
     
@@ -227,8 +237,12 @@ test_sc_in_rra<-function(targetobj,  gs_test=gs_c2_exps, select_gs_names=NULL,pa
   r_cs$rpt=list()
   r_cs$dir=c()
   r_cs$pathway=c()
-  
-  bc_dx_uq=colnames(targetobj@scale.data)
+
+
+  scalef=getscaledata(targetobj)
+
+ 
+  bc_dx_uq=colnames(scalef)
   bc_guide_ass=targetobj@meta.data[bc_dx_uq,'target.gene']
   bc_gene_ass=targetobj@meta.data[bc_dx_uq,'geneID']
   
@@ -250,7 +264,7 @@ test_sc_in_rra<-function(targetobj,  gs_test=gs_c2_exps, select_gs_names=NULL,pa
     gs_name=gs_test$names[gs_pw]
     print(gs_name)
     #target_gene='MKI67'
-    texp_mat=targetobj@scale.data[rownames(targetobj@scale.data)%in%gs_target[[1]],]
+    texp_mat=scalef[rownames(scalef)%in%gs_target[[1]],]
     texp=colSums(texp_mat)
     texp=sort(texp)
     
@@ -296,9 +310,12 @@ get_sc_signature<-function(targetobj, gs_test=gs_c2_exps, padjcutoff=0.01,gsea_c
   #select_gs_names=grep('^KEGG|^BIOCARTA|^REACTOME|^PID',gs_c2$names,invert = T)
   #padjcutoff=0.01
   select_gs_names=gs_test$names
-  r_cs=matrix(rep(0,length(select_gs_names)*ncol(targetobj@scale.data)),nrow=length(select_gs_names))
+
+  scalef=getscaledata(targetobj)
+
+  r_cs=matrix(rep(0,length(select_gs_names)*ncol(scalef)),nrow=length(select_gs_names))
   rownames(r_cs)=select_gs_names
-  colnames(r_cs)=colnames(targetobj@scale.data)
+  colnames(r_cs)=colnames(scalef)
   for(gs_pw in 1:length(select_gs_names)){
     
     #search_ind=which(select_gs_names==gs_pw)
@@ -310,7 +327,7 @@ get_sc_signature<-function(targetobj, gs_test=gs_c2_exps, padjcutoff=0.01,gsea_c
     gs_name=gs_test$names[gs_pw]
     #print(gs_name)
     #target_gene='MKI67'
-    texp_mat=targetobj@scale.data[rownames(targetobj@scale.data)%in%gs_target[[1]],]
+    texp_mat=scalef[rownames(scalef)%in%gs_target[[1]],]
     texp=colMeans(texp_mat)
     r_cs[gs_pw,]=texp
     #texp=sort(texp)
