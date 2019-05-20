@@ -1,13 +1,23 @@
 # virtura_facs_functions
 
-getscaledata<-function(targetobj){
+getscaledata<-function(targetobj,scaled=TRUE){
+# if scaled=FALSE, return raw.data
   if('scale.data'%in%names(attributes(targetobj))){
-    scalef=targetobj@scale.data # for version 2
+    if(scaled){
+      scalef=targetobj@scale.data # for version 2
+    }else{
+      scalef=targetobj@raw.data # for version 2
+    }
   }else{
-    scalef=GetAssayData(object = targetobj, slot = "scale.data")
+    if(scaled){
+      scalef=GetAssayData(object = targetobj, slot = "scale.data")
+    }else{
+      scalef=GetAssayData(object = targetobj, slot = "counts")
+    }
   }
   return (scalef)
 }
+
 
 get_rank_tables<-function(genes_to_rank,negctrlgenelist='NonTargetingControlGuideForHuman'){
   score_test=seq(-1.0,1.0,length.out = length(genes_to_rank))

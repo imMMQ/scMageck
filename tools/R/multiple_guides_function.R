@@ -4,11 +4,20 @@
 # /Users/weili/Dropbox/work/cropseq/Shendure/nmeth18/multiple_guides_function.R
 
 
-getscaledata<-function(targetobj){
+getscaledata<-function(targetobj,scaled=TRUE){
+# if scaled=FALSE, return raw.data
   if('scale.data'%in%names(attributes(targetobj))){
-    scalef=targetobj@scale.data # for version 2
+    if(scaled){
+      scalef=targetobj@scale.data # for version 2
+    }else{
+      scalef=targetobj@raw.data # for version 2
+    }
   }else{
-    scalef=GetAssayData(object = targetobj, slot = "scale.data")
+    if(scaled){
+      scalef=GetAssayData(object = targetobj, slot = "scale.data")
+    }else{
+      scalef=GetAssayData(object = targetobj, slot = "counts")
+    }
   }
   return (scalef)
 }
@@ -59,7 +68,8 @@ single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingCont
   # return X matrix and Y matrix for regression
   # note that all the ngctrlgene are merged into one column, "NegCtrl"
   # if indmatrix is provided, the Xmat will be constructed from indmatrix
-  select_genes=rownames(targetobj@raw.data)[ which(rowSums(as.matrix(targetobj@raw.data)!=0)>=ncol(targetobj@raw.data)*high_gene_frac)]
+  rawf=getscaledata(targetobj,scaled=F)
+  select_genes=rownames(rawf)[ which(rowSums(as.matrix(rawf)!=0)>=ncol(rawf)*high_gene_frac)]
   print(paste('Selected genes:',length(select_genes)))
   # browser()
 
