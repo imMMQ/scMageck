@@ -7,6 +7,8 @@
 # Optional arguments
 # --RRAPATH
 # --LABEL
+# --NEGCTRL 
+# --KEEPTMP
 #
 library(R.utils)
 library(Seurat)
@@ -53,6 +55,11 @@ data_label=ifelse(is.null(args['LABEL']),'sample1',args['LABEL'])
 #bc_dox=read.table(paste('../pairko/run_in_cluster/wl_get_barcodes_output_',data_label,'.txt',sep=''),header=T,as.is = T)
 #bc_gene=read.table('test_sgrna.txt',header=T,as.is = T)
 bc_dox=read.table(args[['BARCODE']],header=T,as.is=T)
+
+keep_tmp=ifelse(is.null(args['KEEPTMP']),F,T)
+
+
+negctrl_gene=ifelse(is.null(args['NEGCTRL']),NULL,args['NEGCTRL'])
 
 #bc_gene=read.table(args[['LIBRARY']],header=T,as.is=T)
 #rownames(bc_gene)=bc_gene[,2]
@@ -108,7 +115,7 @@ for(target_gene in target_gene_list){
   texp=sort(texp)
   texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
 
-  other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH)
+  other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
 
   write.table(other_table,file=paste(data_label,'_',target_gene,'_RRA.txt',sep=''),sep='\t',quote=F,row.names=F)
 

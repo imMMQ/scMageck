@@ -58,7 +58,7 @@ get_rank_tables<-function(genes_to_rank,negctrlgenelist='NonTargetingControlGuid
 }
 
 
-get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),negctrlgenelist='NonTargetingControlGuideForHuman',more_rra='',negsel=T,possel=T){
+get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),negctrlgenelist='NonTargetingControlGuideForHuman',more_rra='',negsel=T,possel=T,keeptmp=F){
   rankexp=rankexp[names(rankexp)%in%rownames(bc_dox_u) & !is.na(bc_dox_u[names(rankexp),'barcode'])]
   if(length(rankexp)<3){
     print('Error: cannot find enough cells.')
@@ -143,9 +143,11 @@ get_rank_tables_from_rra<-function(rankexp,bc_dox_u,rrapath=NULL,pcutoff=0.3,tmp
   }
   report_f=merge(frame_l,frame_h,by=0,suffixes=c('.low','.high'))
   
-  system(paste('rm',low_file,high_file,rra_low_out,rra_high_out))
-  if(!is.null(negctrlgenelist)){
-    system(paste('rm',ngguidefile))
+  if(!keeptmp){
+    system(paste('rm',low_file,high_file,rra_low_out,rra_high_out))
+    if(!is.null(negctrlgenelist)){
+      system(paste('rm',ngguidefile))
+    }
   }
   return (report_f)
 }
