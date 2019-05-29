@@ -10,12 +10,22 @@ Currently, no installation is required to run scMAGeCK pipeline (see the demo). 
 
 ## Dependencies 
 
-scMAGeCK depends on the following softwares or packages, all available via bioconda channel.
+scMAGeCK depends on the following softwares or packages, all available via [bioconda](https://bioconda.github.io/) channel.
 
 * MAGeCK
 * pysam
 * R 
 * Seurat
+
+To install these dependencies via bioconda, install miniconda (Python v3) first (see instructions [here](https://docs.conda.io/en/latest/miniconda.html)), then use the following command:
+
+    conda create -n scmageck -c bioconda mageck pysam r-seurat
+    
+This will create an environment named "scmageck" that includes all dependencies. Use the following command to activate this environment:
+
+    source activate scmageck
+
+
 
 # Demos
 
