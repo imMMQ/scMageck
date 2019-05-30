@@ -117,6 +117,10 @@ optional arguments:
                        The path to the RRA program, if RRA cannot be found in the PATH environment variable.
     --LABEL
                        The label of the output file.
+    --NEGCTRL
+                       The name of the negative control gene. For example, "NonTargetingControlGuideForHuman". Default is NULL (do not use any negative controls).
+    --KEEPTMP
+                       Keep the intermediate files.
 
 
 
