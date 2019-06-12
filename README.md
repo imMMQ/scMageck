@@ -109,7 +109,7 @@ required arguments:
     --RDS
                        An R RDS file of [Seurat](https://satijalab.org/seurat/) object containing the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
     --GENE
-                       The specific gene name to be tested for association (e.g., "MKI67").
+                       Genes whose expressions are to be tested. Multiple genes can be provided, separated by ",". For example, "MKI67,TP53"
 
 optional arguments:
 
@@ -120,7 +120,9 @@ optional arguments:
     --NEGCTRL
                        The name of the negative control gene. For example, "NonTargetingControlGuideForHuman". Default is NULL (do not use any negative controls).
     --KEEPTMP
-                       Keep the intermediate files.
+                       Keep temporary files.
+    --PATHWAY
+                       Treat genes in --GENE option as a pathway. In other words, the averaged expression of these genes will be used for testing.
 
 
 
