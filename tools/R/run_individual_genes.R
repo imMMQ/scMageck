@@ -45,7 +45,7 @@ source(function_script)
 # determine the path of RRA
 
 #RRAPATH='/home/wei_li/.conda/envs/py3k/bin/RRA'
-RRAPATH=ifelse(is.null(args[['RRAPATH']]),'RRA',args['RRAPATH'])
+RRAPATH=ifelse(is.null(args[['RRAPATH']]),'RRA',args[['RRAPATH']])
 print('Checking RRA...')
 #print(RRAPATH)
 if(system(RRAPATH,ignore.stdout = TRUE, ignore.stderr = TRUE)!=0){
@@ -57,7 +57,8 @@ if(system(RRAPATH,ignore.stdout = TRUE, ignore.stderr = TRUE)!=0){
 #quit()
 
 
-data_label=ifelse(is.null(args['LABEL']),'sample1',args['LABEL'])
+#data_label=ifelse(is.null(args['LABEL']),'sample1',args['LABEL'])
+if('LABEL'%in%names(args)){data_label=args[['LABEL']]}else{data_label='sample1'}
 
 # read cell assignment and libray file ####
 
@@ -65,11 +66,13 @@ data_label=ifelse(is.null(args['LABEL']),'sample1',args['LABEL'])
 #bc_gene=read.table('test_sgrna.txt',header=T,as.is = T)
 bc_dox=read.table(args[['BARCODE']],header=T,as.is=T)
 
-keep_tmp=ifelse(is.null(args['KEEPTMP']),F,T)
-ispathway=ifelse(is.null(args['PATHWAY']),F,T)
+keep_tmp=ifelse('KEEPTMP'%in%names(args),T,F)
+print(paste('keep_tmp:',keep_tmp))
+ispathway=ifelse('PATHWAY'%in%names(args),T,F)
+print(paste('ispathway:',ispathway))
 
 
-negctrl_gene=ifelse(is.null(args['NEGCTRL']),NULL,args['NEGCTRL'])
+if('NEGCTRL'%in%names(args)){negctrl_gene=args[['NEGCTRL']]}else{negctrl_gene=NULL}
 
 #bc_gene=read.table(args[['LIBRARY']],header=T,as.is=T)
 #rownames(bc_gene)=bc_gene[,2]
@@ -114,7 +117,7 @@ if('scale.data'%in%names(attributes(targetobj))){
   scalef=GetAssayData(object = targetobj, slot = "scale.data")
 }
 
-if(ispathway){
+if(ispathway==TRUE){
   for(target_gene in target_gene_list){
     if(!target_gene%in%rownames(scalef)){
       print(paste('Error: gene ',target_gene,' not in expression list.'))

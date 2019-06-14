@@ -36,8 +36,10 @@ source(function_script)
 
 # optional parameters ####
 
-data_label=ifelse(is.null(args['LABEL']),'sample1',args['LABEL'])
-n_permutation=ifelse(is.null(args['PERMUTATION']),10000,as.integer(args['PERMUTATION']))
+#data_label=ifelse(is.null(args['LABEL']),'sample1',args['LABEL'])
+if('LABEL'%in%names(args)){data_label=args[['LABEL']]}else{data_label='sample1'}
+#n_permutation=ifelse(is.null(args['PERMUTATION']),10000,as.integer(args['PERMUTATION']))
+if('PERMUTATION'%in%names(args)){n_permutation=as.integer(args[['PERMUTATION']])}else{n_permutation=10000}
 
 # read cell assignment and libray file ####
 
