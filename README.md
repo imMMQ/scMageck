@@ -12,10 +12,10 @@ Currently, no installation is required to run scMAGeCK pipeline (see the demo). 
 
 scMAGeCK depends on the following softwares or packages, all available via [bioconda](https://bioconda.github.io/) channel.
 
-* MAGeCK
+* [MAGeCK](https://mageck.sourceforge.net)
 * pysam
 * R 
-* Seurat
+* [Seurat](https://satijalab.org/seurat/)
 
 To install these dependencies via bioconda, install miniconda (Python v3) first (see instructions [here](https://docs.conda.io/en/latest/miniconda.html)), then use the following command:
 
@@ -25,6 +25,7 @@ This will create an environment named "scmageck" that includes all dependencies.
 
     source activate scmageck
 
+Sometimes Seurat may not be installed successfully using bioconda. If this is the case, follow the instructions of [Seurat installation](https://satijalab.org/seurat/install.html).
 
 
 # Demos
