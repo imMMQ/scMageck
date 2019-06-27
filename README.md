@@ -152,6 +152,34 @@ optional arguments:
                        The number of permutations for p value calculation.
 
 
+# Output files
+
+## scMAGeCK-RRA
+
+scMAGeCK-RRA will output the ranking and p values of each perturbed genes, using the RRA program in MAGeCK. Users familiar with the MAGeCK program may find it similar with the [gene_summary](https://sourceforge.net/p/mageck/wiki/output/#gene_summary_txt) output in MAGeCK.
+
+Here is the example output of scMAGeCK-RRA:
+
+    Row.names       items_in_group.low      lo_value.low    p.low   FDR.low goodsgrna.low   items_in_group.high     lo_value.high   p.high  FDR.high        goodsgrna.high
+    TP53    271     0.11832 0.95619 1       48      271     1.014e-83       4.9975e-06      0.00015 184
+
+Explanations of each column are below:
+
+|Column|Content|
+|------|-------|
+|Row.names| Perturbed gene name|
+|items_in_group.low| The number of single-cells with each gene perturbed |
+|lo_value.low | The RRA score in negative selection (reducing the marker expression if this gene is perturbed|      
+|p.low  | The raw p-value (using permutation) of this gene in negative selection  |  
+|FDR.low | The false discovery rate of this gene in negative selection |
+|goodsgrna.low | The number of single-cells that passes the threshold and is considered in the RRA score calculation in negative selection|
+|items_in_group.high| The same as items_in_group.low: the number of single-cells with each gene perturbed |
+|lo_value.high| The RRA score in positive selection (increasing the marker expression if this gene is perturbed|      
+|p.high| The raw p-value (using permutation) of this gene in positive selection  |  
+|FDR.high| The false discovery rate of this gene in positive selection |
+|goodsgrna.high| The number of single-cells that passes the threshold and is considered in the RRA score calculation in positive selection|
+
+
 
 # History
 
