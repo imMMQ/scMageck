@@ -4,6 +4,8 @@ scMAGeCK is a computational model to identify genes associated with multiple exp
 
 scMAGeCK is based on our previous [MAGeCK](http://mageck.sourceforge.net) and MAGeCK-VISPR models for pooled CRISPR screens.
 
+Questions? Comments? Join the [MAGeCK Google group](https://groups.google.com/forum/?hl=en#!forum/mageck).
+
 # Installation
 
 Currently, no installation is required to run scMAGeCK pipeline (see the demo). We will deposit the pipeline into bioconda channel soon.
