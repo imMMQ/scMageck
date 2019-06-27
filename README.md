@@ -45,6 +45,8 @@ or
 
 to run both demos.
 
+The explanations of each input/outp files can be found in the Output files section below.
+
 ## Demo 2: collect single cell identity information from bam files
 
 This demo provides a mini example to collect single cell identity from a CROP-seq experiment. The single-cell RNA-seq is performed on 10X Genomics platform.
@@ -53,6 +55,9 @@ In the terminal, type
     bash run_count_bam.sh
 
 to run this demo.
+
+
+The explanations of each input/outp files can be found in the Output files section below.
 
 # Usage
 
@@ -186,7 +191,7 @@ Explanations of each column are below:
 
 scMAGeCK-LR will generate several files below:
 
-|File|Description
+|File|Description|
 |----|----------|
 |_score.txt|The score (similar with log fold change) of each perturbed gene (rows) on each marker gene (columns)|
 |_score.pval.txt|The associated p values of each score|
@@ -201,6 +206,28 @@ The format of score.txt and score.pval.txt is a simple table file with rows corr
 This row records the effects of perturbing APC gene on the expressions of APC, ARID1A, TP53 and MKI67.
 
 This file can also be imported directly into R (using read.table). 
+
+
+## cropseq_count (cell identity)
+
+The output of cell identity contains a single text file below:
+
+
+    cell    barcode sgrna   gene    read_count      umi_count
+    AAATCAACGGGTGA-1        NF1_sg_118      AGTCAGTACTGAGCACAACA    NF1     1187    30
+    AAATCAACGGGTGA-1        CDKN2A_sg_70    TCTTGGTGACCCTCCGGATT    CDKN2A  1       1
+    AAATCAACGGGTGA-1        SETD2_sg_157    AGTTCTTCTCGGTGTCCAAA    SETD2   1       1
+    AAATCAACGGGTGA-1        ARID1B_sg_14    GGAAGCAACCAGTCTCGATC    ARID1B  1       1
+
+
+|Column|Description|
+|------|-----------|
+|cell|Single-cell name (cell barcode)|
+|barcode|The sgRNA ID detected|
+|sgrna|The sgRNA sequence|
+|gene|The target gene|
+|read_count|Number of reads|
+|umi_count|Number of UMIs|
 
 
 # History
