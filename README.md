@@ -169,16 +169,36 @@ Explanations of each column are below:
 |------|-------|
 |Row.names| Perturbed gene name|
 |items_in_group.low| The number of single-cells with each gene perturbed |
-|lo_value.low | The RRA score in negative selection (reducing the marker expression if this gene is perturbed|      
+|lo_value.low | The RRA score in negative selection (reducing the marker expression if this gene is perturbed). The RRA score uses a p value from rank order statistics to measure the degree of selection; the smaller score, the stronger the selection is. More information on the calculation of RRA score can be found in our original [MAGeCK](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0554-4) paper. |      
 |p.low  | The raw p-value (using permutation) of this gene in negative selection  |  
 |FDR.low | The false discovery rate of this gene in negative selection |
 |goodsgrna.low | The number of single-cells that passes the threshold and is considered in the RRA score calculation in negative selection|
-|items_in_group.high| The same as items_in_group.low: the number of single-cells with each gene perturbed |
+|items_in_group.high| The same as items_in_group.low: the number of single-cells with each gene perturbed) |
 |lo_value.high| The RRA score in positive selection (increasing the marker expression if this gene is perturbed|      
 |p.high| The raw p-value (using permutation) of this gene in positive selection  |  
 |FDR.high| The false discovery rate of this gene in positive selection |
 |goodsgrna.high| The number of single-cells that passes the threshold and is considered in the RRA score calculation in positive selection|
 
+
+## scMAGeCK-LR
+
+scMAGeCK-LR will generate several files below:
+
+|File|Description
+|----|----------|
+|_score.txt|The score (similar with log fold change) of each perturbed gene (rows) on each marker gene (columns)|
+|_score.pval.txt|The associated p values of each score|
+|LR.RData|An R object to store scores and p values|
+
+The format of score.txt and score.pval.txt is a simple table file with rows corresponding to perturbed genes and columns corresponding to marker genes. For example in the score.txt,
+
+    Perturbedgene        APC     ARID1A    TP53    MKI67
+    APC     0.138075836476524       -0.0343441660045313     0.214449590551132       -0.150287676553705
+
+
+This row records the effects of perturbing APC gene on the expressions of APC, ARID1A, TP53 and MKI67.
+
+This file can also be imported directly into R (using read.table). 
 
 
 # History
