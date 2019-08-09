@@ -158,6 +158,24 @@ optional arguments:
     --PERMUTATION
                        The number of permutations for p value calculation.
 
+# R environment
+
+If you'd like to use scMAGeCK in your R script, you can install scMAGeCK package by command:
+
+    R CMD install scmageck_0.99.0.tar.gz
+
+Here are the examples: 
+
+    BARCODE = system.file("extdata","barcode_rec.txt",package = "scmageck")
+    RDS = system.file("extdata","singles_dox_mki67_v3.RDS",package = "scmageck")
+    RRAPATH = system.file("extdata","RRA",package = "scmageck")
+  
+    scmageck_rra(BARCODE=BARCODE, RDS=RDS, GENE="MKI67", RRAPATH=RRAPATH,  
+             LABEL='dox_mki67', NEGCTRL=NULL, KEEPTMP=FALSE, PATHWAY=FALSE)
+
+    scmageck_lr(BARCODE=BARCODE, RDS=RDS, LABEL='dox_scmageck_lr', 
+            NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000)
+
 
 # Output files
 
