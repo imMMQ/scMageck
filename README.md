@@ -166,16 +166,16 @@ If you'd like to use scMAGeCK in your R script, scMAGeCK package can be installe
 
 Here are the examples: 
 
-    BARCODE = system.file("extdata","barcode_rec.txt",package = "scmageck")
+    BARCODE = system.file("extdata", "barcode_rec.txt", package = "scmageck")
     
-    RDS = system.file("extdata","singles_dox_mki67_v3.RDS",package = "scmageck")
+    RDS = system.file("extdata", "singles_dox_mki67_v3.RDS", package = "scmageck")
     
-    RRAPATH = system.file("extdata","RRA",package = "scmageck")
+    RRAPATH = system.file("extdata", "RRA", package = "scmageck")
   
-    scmageck_rra(BARCODE=BARCODE, RDS=RDS, GENE="MKI67", RRAPATH=RRAPATH,  
-             LABEL='dox_mki67', NEGCTRL=NULL, KEEPTMP=FALSE, PATHWAY=FALSE)
+    scmageck_rra(BARCODE = BARCODE, RDS = RDS, GENE = "MKI67", RRAPATH = RRAPATH,  
+             LABEL = 'dox_mki67', NEGCTRL = NULL, KEEPTMP = FALSE, PATHWAY = FALSE)
 
-    scmageck_lr(BARCODE=BARCODE, RDS=RDS, LABEL='dox_scmageck_lr', 
+    scmageck_lr(BARCODE = BARCODE, RDS = RDS, LABEL = 'dox_scmageck_lr', 
             NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000)
 
 
