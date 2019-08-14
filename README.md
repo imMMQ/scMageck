@@ -8,7 +8,13 @@ Questions? Comments? Join the [MAGeCK Google group](https://groups.google.com/fo
 
 # Installation
 
-Currently, no installation is required to run scMAGeCK pipeline (see the demo). We will deposit the pipeline into bioconda channel soon.
+You can install scMAGeCK R package by following steps. We will submit the R package to Bioconductor soon.
+
+Open your RStudio and click on the Terminal tab (next to the Console tab):
+
+    cd scMAGeCK_package_folder
+    
+    R CMD install scmageck_0.99.0.tar.gz
 
 ## Dependencies 
 
@@ -157,26 +163,6 @@ optional arguments:
                        The label of the output file.
     --PERMUTATION
                        The number of permutations for p value calculation.
-
-# R environment
-
-If you'd like to use scMAGeCK in your R script, scMAGeCK package can be installed by following command:
-
-    R CMD install scmageck_0.99.0.tar.gz
-
-Here are the examples: 
-
-    BARCODE = system.file("extdata", "barcode_rec.txt", package = "scmageck")
-    
-    RDS = system.file("extdata", "singles_dox_mki67_v3.RDS", package = "scmageck")
-    
-    RRAPATH = system.file("extdata", "RRA", package = "scmageck")
-  
-    scmageck_rra(BARCODE = BARCODE, RDS = RDS, GENE = "MKI67", RRAPATH = RRAPATH,  
-             LABEL = 'dox_mki67', NEGCTRL = NULL, KEEPTMP = FALSE, PATHWAY = FALSE)
-
-    scmageck_lr(BARCODE = BARCODE, RDS = RDS, LABEL = 'dox_scmageck_lr', 
-            NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000)
 
 
 # Output files
