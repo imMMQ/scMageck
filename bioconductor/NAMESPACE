@@ -1,0 +1,5 @@
+importFrom("stats", "runif")
+importFrom("utils", "read.table", "write.table")
+export(scmageck_lr)
+export(scmageck_rra)
+import("Seurat")
