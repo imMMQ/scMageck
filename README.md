@@ -14,7 +14,7 @@ Open your RStudio and click on the Terminal tab (next to the Console tab):
 
     cd scMAGeCK_package_folder
     
-    R CMD install scmageck_0.99.0.tar.gz
+    R CMD install scmageck_0.99.1.tar.gz
 
 ## Dependencies 
 
