@@ -1,5 +1,5 @@
 scmageck_lr <-
-function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL){
+function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
   if(!is.null(LABEL)){
     data_label=LABEL}
   else{data_label='sample1'}
@@ -38,7 +38,9 @@ function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL){
   Amat=Amat_pm_lst[[1]]
   Amat_pval=Amat_pm_lst[[2]]
   #save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
-  #write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=paste(data_label,'_score.txt',sep=''),sep='\t',quote=F,row.names=F)
-  #write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=paste(data_label,'_score_pval.txt',sep=''),sep='\t',quote=F,row.names=F)
+  if(!is.null(SAVEPATH)){
+    write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=paste(SAVEPATH,data_label,'_score.txt',sep=''),sep='\t',quote=F,row.names=F)
+    write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=paste(SAVEPATH,data_label,'_score_pval.txt',sep=''),sep='\t',quote=F,row.names=F)
+  }
   return(list(data.frame(Perturbedgene=rownames(Amat),Amat), data.frame(Perturbedgene=rownames(Amat),Amat_pval)))
 }

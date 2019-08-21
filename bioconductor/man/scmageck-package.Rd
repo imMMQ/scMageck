@@ -30,16 +30,15 @@ Maintainer: \packageMaintainer{scmageck}
 \examples{
     BARCODE <- system.file("extdata","barcode_rec.txt",package = "scmageck")
     RDS <- system.file("extdata","singles_dox_mki67_v3.RDS",package = "scmageck")
-    RRAPATH <- system.file("bin","RRA",package = "scmageck")
     
     target_gene <- "MKI67"
     
-    rra_result <- scmageck_rra(BARCODE=BARCODE, RDS=RDS, GENE=target_gene, RRAPATH=RRAPATH,  
-             LABEL='dox_mki67', NEGCTRL=NULL, KEEPTMP=FALSE, PATHWAY=FALSE)
+    rra_result <- scmageck_rra(BARCODE=BARCODE, RDS=RDS, GENE=target_gene,
+             LABEL='dox_mki67', NEGCTRL=NULL, KEEPTMP=FALSE, PATHWAY=FALSE, SAVEPATH=NULL)
     head(rra_result)
     
     lr_result <- scmageck_lr(BARCODE=BARCODE, RDS=RDS, LABEL='dox_scmageck_lr', 
-            NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000)
+            NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000, SAVEPATH=NULL)
     lr_score <- lr_result[1]
     lr_score_pval <- lr_result[2]
     head(lr_score_pval)

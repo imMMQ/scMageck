@@ -1,7 +1,7 @@
 scmageck_rra <-
-function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=F,PATHWAY=F){
+function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PATHWAY=FALSE,SAVEPATH='./'){
   if(is.null(RRAPATH)){
-    RRAPATH = 'RRA'
+    RRAPATH = system.file("bin","RRA",package = "scmageck")
   }
   print('Checking RRA...')
   if(system(RRAPATH,ignore.stdout = TRUE, ignore.stderr = TRUE)!=0){
@@ -64,7 +64,9 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=F,PATHWAY
     texp=sort(texp)
     texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
     other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
-    #write.table(other_table,file=paste(data_label,'_',paste(target_gene_list,collapse='_'),'_RRA.txt',sep=''),sep='\t',quote=F,row.names=F)
+    if(!is.null(SAVEPATH)){
+      write.table(other_table,file=paste(SAVEPATH,data_label,'_',paste(target_gene_list,collapse='_'),'_RRA.txt',sep=''),sep='\t',quote=F,row.names=F)
+    }
     return(other_table)
   }else{
     # treat genes separately
@@ -79,7 +81,9 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=F,PATHWAY
       texp=sort(texp)
       texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
       other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
-      #write.table(other_table,file=paste(data_label,'_',target_gene,'_RRA.txt',sep=''),sep='\t',quote=F,row.names=F)
+      if(!is.null(SAVEPATH)){
+        write.table(other_table,file=paste(SAVEPATH,data_label,'_',target_gene,'_RRA.txt',sep=''),sep='\t',quote=F,row.names=F)
+      }
       return(other_table)
     }
   }

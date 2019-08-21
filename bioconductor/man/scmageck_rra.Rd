@@ -8,7 +8,7 @@ Use RRA to test the association of gene knockout with certain marker expression
 echo "Use RRA to test the association of gene knockout with certain marker expression"
 }
 \usage{
-scmageck_rra(BARCODE, RDS, GENE, RRAPATH = NULL, LABEL = NULL, NEGCTRL = NULL, KEEPTMP = F, PATHWAY = F)
+scmageck_rra(BARCODE, RDS, GENE, RRAPATH = NULL, LABEL = NULL, NEGCTRL = NULL, KEEPTMP = FALSE, PATHWAY = FALSE, SAVEPATH = "./")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -35,5 +35,8 @@ Keep temporary files.
 }
   \item{PATHWAY}{
 Treat genes in --GENE option as a pathway. In other words, the averaged expression of these genes will be used for testing.
+}
+  \item{SAVEPATH}{
+The save path of result. Default save path is the current working directory. If you don't need save the result, set SAVEPATH as NULL.
 }
 }

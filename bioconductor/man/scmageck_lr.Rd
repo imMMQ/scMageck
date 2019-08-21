@@ -8,7 +8,7 @@ Use linear regression to test the association of gene knockout with all possible
 echo "Use linear regression to test the association of gene knockout with all possible genes"
 }
 \usage{
-scmageck_lr(BARCODE, RDS, NEGCTRL, LABEL = NULL, PERMUTATION = NULL)
+scmageck_lr(BARCODE, RDS, NEGCTRL, LABEL = NULL, PERMUTATION = NULL, SAVEPATH = "./")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,5 +26,8 @@ The label of the output file.
 }
   \item{PERMUTATION}{
 The number of permutations for p value calculation.
+}
+  \item{SAVEPATH}{
+The save path of result. Default save path is the current working directory. If you don't need save the result, set SAVEPATH as NULL.
 }
 }
