@@ -10,4 +10,5 @@ lr_result <- scmageck_lr(BARCODE=BARCODE, RDS=RDS, LABEL='dox_scmageck_lr',
                          NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000)
 lr_score <- lr_result[1]
 lr_score_pval <- lr_result[2]
-head(lr_score)
+
+#head(lr_score)
