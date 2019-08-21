@@ -10,7 +10,7 @@ Questions? Comments? Join the [MAGeCK Google group](https://groups.google.com/fo
 
 You can install scMAGeCK R package by following steps. We will submit the R package to Bioconductor soon.
 
-First, download scMAGeCK R source code from "Downloads" tab.
+First, download scMAGeCK R source code from [Downloads](https://bitbucket.org/weililab/scmageck/downloads/scmageck_0.99.1.tar.gz) tab.
 
 Second, in the command line (if you are using RStudio, open your RStudio and click on the "Terminal" tab which is next to the Console tab), type the following command:
 
@@ -43,13 +43,18 @@ Sometimes Seurat may not be installed successfully using bioconda. If this is th
 ## Demo 1: running scMAGeCK from known single cell identity
 
 This demo provides a mini example to run both modules of scMAGeCK: RRA and LR. 
+
+In Rstudio, open file <em>scmageck_rra_demo.R</em> or <em>scmageck_lr_demo.R</em>. 
+
+Press <em>Ctrl</em> + <em>Enter</em> to run all lines of the script or click <em>Run</em> tap to run line by line.
+
 In the terminal, type
 
-    bash run_scmageck_rra.sh   
+    Rscript scmageck_rra_demo.R  
 
 or
 
-    bash run_scmageck_lr.sh
+    Rscript scmageck_lr_demo.R
 
 to run both demos.
 
@@ -112,11 +117,11 @@ optional arguments:
 
 ## Use RRA to test the association of gene knockout with certain marker expression
 
-The R script "run_individual_genes.R"  provides an easy-to-run interface to test the association of gene knockout with certain marker expression.
+The R script "scmageck_rra_demo.R"  provides an example to test the association of gene knockout with certain marker expression.
 
-The first demo (demo1) contains an example of running this R script.
+You can find this R script in the demo/demo1 folder. 
 
-    usage: Rscript run_individual_genes.R OPTIONS
+    usage: Rscript scmageck_rra_demo.R
 
 required arguments: 
 
@@ -139,16 +144,18 @@ optional arguments:
                        Keep temporary files.
     --PATHWAY
                        Treat genes in --GENE option as a pathway. In other words, the averaged expression of these genes will be used for testing.
+    --SAVEPATH
+                       By default, the result will be saved to the current working directory and you can chage the path as you need. If you don't need to save the result, just set SAVEPATH=NULL.
 
 
 
 ## Use linear regression to test the association of gene knockout with all possible genes
 
-The R script, "run_lr.R", provides an easy-to-run interface to use linear regression for the association of gene knockout with the expression of all the genes.
+The R script, "scmageck_lr_demo.R", provides an example to use linear regression for the association of gene knockout with the expression of all the genes.
 
-The first demo (demo1) contains an example of running this R script.
+You can find this R script in the demo/demo1 folder.
 
-    usage: Rscript run_lr.R OPTIONS
+    usage: Rscript scmageck_lr_demo.R
 
 required arguments: 
 
@@ -165,6 +172,8 @@ optional arguments:
                        The label of the output file.
     --PERMUTATION
                        The number of permutations for p value calculation.
+    --SAVEPATH
+                       By default, the result will be saved to the current working directory and you can chage the path as you need. If you don't need to save the result, just set SAVEPATH=NULL.
 
 
 # Output files
