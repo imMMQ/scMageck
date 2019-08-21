@@ -44,9 +44,7 @@ Sometimes Seurat may not be installed successfully using bioconda. If this is th
 
 This demo provides a mini example to run both modules of scMAGeCK: RRA and LR. 
 
-In Rstudio, open file *scmageck_rra_demo.R* or *scmageck_lr_demo.R*. 
-
-Press *Ctrl + Enter* to run all lines of the script or click *Run* tap to run line by line.
+In Rstudio, open file *scmageck_rra_demo.R* or *scmageck_lr_demo.R*. You can press *Ctrl + Enter* to run all lines of the script or click *Run* tap to run line by line.
 
 In the terminal, type
 
