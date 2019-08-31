@@ -18,7 +18,7 @@ Second, in the command line (if you are using RStudio, open your RStudio and cli
     
     R CMD INSTALL scmageck_0.99.1.tar.gz
 
-Note: "R CMD install" doesn't work; use "R CMD INSTALL".
+Note: "R CMD install" may not work; use "R CMD INSTALL".
 
 ## Dependencies 
 
