@@ -6,6 +6,7 @@
 frame2indmatrix<-function(bc_d,targetobj){
 
   scalef=getscaledata(targetobj)
+  colnames(scalef) = sub('-\\d','',colnames(scalef))
   rnm=unique(bc_d$cell)
   cnm=unique(bc_d$gene)
   rnm=rnm[!is.na(rnm)]
