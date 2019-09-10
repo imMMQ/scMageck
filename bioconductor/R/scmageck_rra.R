@@ -24,7 +24,7 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
     negctrl_gene=NEGCTRL}
   else{negctrl_gene=NULL}
   
-  bc_dox[,1]=sub('-\\d','',bc_dox[,1])
+  bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
   
   guide_count=table(bc_dox$cell)
   ncnt=table(table(bc_dox$cell))

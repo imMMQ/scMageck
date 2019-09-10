@@ -10,7 +10,7 @@ function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
   
   # read cell assignment and libray file ####
   bc_dox=read.table(BARCODE,header=T,as.is=T)
-  bc_dox[,1]=sub('-\\d','',bc_dox[,1])
+  bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
   
   guide_count=table(bc_dox$cell)
   ncnt=table(table(bc_dox$cell))

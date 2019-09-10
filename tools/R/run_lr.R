@@ -54,7 +54,7 @@ bc_dox=read.table(args[['BARCODE']],header=T,as.is=T)
 #dim(bc_dox)
 
 #bc_dox[,c('oligo','gene')]=bc_gene[bc_dox$barcode,c('oligo','gene')]
-bc_dox[,1]=sub('-\\d','',bc_dox[,1])
+bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
 
 guide_count=table(bc_dox$cell)
 ncnt=table(table(bc_dox$cell))
