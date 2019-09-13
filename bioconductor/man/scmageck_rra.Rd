@@ -16,7 +16,7 @@ scmageck_rra(BARCODE, RDS, GENE, RRAPATH = NULL, LABEL = NULL, NEGCTRL = NULL, K
 A txt file to include cell identity information, generated from the cell identity collection step.
 }
   \item{RDS}{
-An R RDS file of Seurat object containing the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
+A Seurat object or local RDS file path that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
 }
   \item{GENE}{
 Genes whose expressions are to be tested. Multiple genes can be provided, separated by ",". For example, "MKI67,TP53"

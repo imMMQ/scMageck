@@ -16,7 +16,7 @@ scmageck_lr(BARCODE, RDS, NEGCTRL, LABEL = NULL, PERMUTATION = NULL, SAVEPATH = 
 A txt file to include cell identity information, generated from the cell identity collection step.
 }
   \item{RDS}{
-An R RDS file of Seurat object containing the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
+A Seurat object or local RDS file path that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
 }
   \item{NEGCTRL}{
 The name of the genes (separated by ",") served as negative controls.

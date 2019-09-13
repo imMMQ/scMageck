@@ -28,7 +28,10 @@ Maintainer: \packageMaintainer{scmageck}
 
 \keyword{ package }
 \examples{
+    ### BARCODE file contains cell identity information, generated from the cell identity collection step
     BARCODE <- system.file("extdata","barcode_rec.txt",package = "scmageck")
+    
+    ### RDS can be a Seurat object or local RDS file path that contains the scRNA-seq dataset
     RDS <- system.file("extdata","singles_dox_mki67_v3.RDS",package = "scmageck")
     
     target_gene <- "MKI67"
