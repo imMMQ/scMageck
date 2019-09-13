@@ -128,7 +128,7 @@ required arguments:
     --BARCODE
                        A txt file to include cell identity information, generated from the cell identity collection step. 
     --RDS
-                       An R RDS file of [Seurat](https://satijalab.org/seurat/) object containing the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
+                       A Seurat object or local RDS file that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
     --GENE
                        Genes whose expressions are to be tested. Multiple genes can be provided, separated by ",". For example, "MKI67,TP53"
 
@@ -162,7 +162,7 @@ required arguments:
     --BARCODE
                        A txt file to include cell identity information, generated from the cell identity collection step. 
     --RDS
-                       An R RDS file of [Seurat](https://satijalab.org/seurat/) object containing the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
+                       A Seurat object or local RDS file that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
     --NEGCTRL
                        The name of the genes (separated by ",") served as negative controls.
 
