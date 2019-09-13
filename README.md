@@ -10,13 +10,13 @@ Questions? Comments? Join the [MAGeCK Google group](https://groups.google.com/fo
 
 You can install scMAGeCK R package by following steps. We will submit the R package to Bioconductor soon.
 
-First, download scMAGeCK R source code from [Downloads](https://bitbucket.org/weililab/scmageck/downloads/scmageck_0.99.2.tar.gz) tab.
+First, download scMAGeCK R source code from [Downloads](https://bitbucket.org/weililab/scmageck/downloads/scmageck_0.99.3.tar.gz) tab.
 
 Second, in the command line (if you are using RStudio, open your RStudio and click on the "Terminal" tab which is next to the Console tab), type the following command:
 
     cd scMAGeCK_package_folder
     
-    R CMD INSTALL scmageck_0.99.2.tar.gz
+    R CMD INSTALL scmageck_0.99.3.tar.gz
 
 Note: "R CMD install" may not work; use "R CMD INSTALL".
 
@@ -128,7 +128,7 @@ required arguments:
     --BARCODE
                        A txt file to include cell identity information, generated from the cell identity collection step. 
     --RDS
-                       A Seurat object or local RDS file that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
+                       A Seurat object or local RDS file path that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
     --GENE
                        Genes whose expressions are to be tested. Multiple genes can be provided, separated by ",". For example, "MKI67,TP53"
 
@@ -162,7 +162,7 @@ required arguments:
     --BARCODE
                        A txt file to include cell identity information, generated from the cell identity collection step. 
     --RDS
-                       A Seurat object or local RDS file that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
+                       A Seurat object or local RDS file path that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
     --NEGCTRL
                        The name of the genes (separated by ",") served as negative controls.
 
