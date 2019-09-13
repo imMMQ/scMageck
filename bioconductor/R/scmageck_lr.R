@@ -21,9 +21,13 @@ function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
   print(paste('Neg Ctrl guide:',paste(ngctrlgenelist,collapse=';')))
   
   # read Seurat RDS file ####
-  print(paste("Reading RDS file:",RDS))
-  targetobj=readRDS(RDS)
-  
+  if(is.character(RDS)){
+    print(paste("Reading RDS file:",RDS))
+    targetobj=readRDS(RDS)
+  }else{
+    targetobj=RDS
+  }
+ 
   # convert to ind_matrix ####
   ind_matrix<-frame2indmatrix(bc_dox,targetobj)
   print(paste('Index matrix dimension:',nrow(ind_matrix),',',ncol(ind_matrix)))
