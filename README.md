@@ -123,31 +123,12 @@ You can find this R script in the demo/demo1 folder.
 
     usage: Rscript scmageck_rra_demo.R
 
-required arguments: 
 
-    --BARCODE
-                       A txt file to include cell identity information, generated from the cell identity collection step. 
-    --RDS
-                       A Seurat object or local RDS file path that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
-    --GENE
-                       Genes whose expressions are to be tested. Multiple genes can be provided, separated by ",". For example, "MKI67,TP53"
-
-optional arguments:
-
-    --RRAPATH
-                       The path to the RRA program, if RRA cannot be found in the PATH environment variable.
-    --LABEL
-                       The label of the output file.
-    --NEGCTRL
-                       The name of the negative control gene. For example, "NonTargetingControlGuideForHuman". Default is NULL (do not use any negative controls).
-    --KEEPTMP
-                       Keep temporary files.
-    --PATHWAY
-                       Treat genes in --GENE option as a pathway. In other words, the averaged expression of these genes will be used for testing.
-    --SAVEPATH
-                       By default, the result will be saved to the current working directory and you can chage the path as you need. If you don't need to save the result, just set SAVEPATH=NULL.
+This demo demonstrates the usage of the function *scmageck_rra* in the scMAGeCK R package. For a complete documentation of *scmageck_rra*, refer to the corresponding R documentation:
 
 
+    >?scmageck_rra
+    
 
 ## Use linear regression to test the association of gene knockout with all possible genes
 
@@ -157,23 +138,12 @@ You can find this R script in the demo/demo1 folder.
 
     usage: Rscript scmageck_lr_demo.R
 
-required arguments: 
 
-    --BARCODE
-                       A txt file to include cell identity information, generated from the cell identity collection step. 
-    --RDS
-                       A Seurat object or local RDS file path that contains the scRNA-seq dataset. Note that the dataset has to be normalized and scaled.
-    --NEGCTRL
-                       The name of the genes (separated by ",") served as negative controls.
+This demo demonstrates the usage of the function *scmageck_lr* in the scMAGeCK R package. For a complete documentation of *scmageck_lr*, refer to the corresponding R documentation:
 
-optional arguments:
 
-    --LABEL
-                       The label of the output file.
-    --PERMUTATION
-                       The number of permutations for p value calculation.
-    --SAVEPATH
-                       By default, the result will be saved to the current working directory and you can chage the path as you need. If you don't need to save the result, just set SAVEPATH=NULL.
+    >?scmageck_lr
+
 
 
 # Output files
