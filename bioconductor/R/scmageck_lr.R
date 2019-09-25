@@ -1,5 +1,5 @@
 scmageck_lr <-
-function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
+function(BARCODE,RDS,NEGCTRL,SELECT_GENE=NULL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
   if(!is.null(LABEL)){
     data_label=LABEL}
   else{data_label='sample1'}
@@ -12,7 +12,7 @@ function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
   bc_dox=read.table(BARCODE,header=T,as.is=T)
   bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
   
-  if(sum(colnames(bcf)%in%c("cell","barcode","gene"))!=3){
+  if(sum(colnames(bc_dox)%in%c("cell","barcode","gene"))!=3){
     stop('cell, barcode, or gene column names not found in barcode file.')
   }
   
@@ -37,7 +37,7 @@ function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
   print(paste('Index matrix dimension:',nrow(ind_matrix),',',ncol(ind_matrix)))
   
   # try to perform matrix regresson on single genes ####
-  mat_for_single_reg=single_gene_matrix_regression(targetobj,ngctrlgene=ngctrlgenelist,indmatrix=ind_matrix,high_gene_frac=-1.00)
+  mat_for_single_reg=single_gene_matrix_regression(targetobj,selected_genes_list=SELECT_GENE,ngctrlgene=ngctrlgenelist,indmatrix=ind_matrix,high_gene_frac=-1.00)
   Xmat=mat_for_single_reg[[1]]
 
   # Xmat[,which(colnames(Xmat)%in%ngctrlgenelist)[1]]=1 # already integrated into function

@@ -15,7 +15,7 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
   # read cell assignment and libray file ####
   bc_dox=read.table(BARCODE,header=T,as.is=T)
   # check barcode file
-  if(sum(colnames(bcf)%in%c("cell","barcode","gene"))!=3){
+  if(sum(colnames(bc_dox)%in%c("cell","barcode","gene"))!=3){
     stop('cell, barcode, or gene column names not found in barcode file.')
   }
   
