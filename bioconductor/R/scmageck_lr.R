@@ -12,6 +12,10 @@ function(BARCODE,RDS,NEGCTRL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
   bc_dox=read.table(BARCODE,header=T,as.is=T)
   bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
   
+  if(sum(colnames(bcf)%in%c("cell","barcode","gene"))!=3){
+    stop('cell, barcode, or gene column names not found in barcode file.')
+  }
+  
   guide_count=table(bc_dox$cell)
   ncnt=table(table(bc_dox$cell))
   print(paste('Total barcode records:',nrow(bc_dox)))
