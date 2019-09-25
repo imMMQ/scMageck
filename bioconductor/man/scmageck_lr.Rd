@@ -8,7 +8,7 @@ Use linear regression to test the association of gene knockout with all possible
 echo "Use linear regression to test the association of gene knockout with all possible genes"
 }
 \usage{
-scmageck_lr(BARCODE, RDS, NEGCTRL, LABEL = NULL, PERMUTATION = NULL, SAVEPATH = "./")
+scmageck_lr(BARCODE, RDS, NEGCTRL, SELECT_GENE=NULL, LABEL = NULL, PERMUTATION = NULL, SAVEPATH = "./")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,6 +20,9 @@ A Seurat object or local RDS file path that contains the scRNA-seq dataset. Note
 }
   \item{NEGCTRL}{
 The name of the genes (separated by ",") served as negative controls.
+}
+  \item{SELECT_GENE}{
+The list of genes for regression. By default, all genes in the table are subject to regression. 
 }
   \item{LABEL}{
 The label of the output file.
