@@ -42,6 +42,8 @@ function(BARCODE,RDS,NEGCTRL,SELECT_GENE=NULL,LABEL=NULL,PERMUTATION=NULL,SAVEPA
 
   # Xmat[,which(colnames(Xmat)%in%ngctrlgenelist)[1]]=1 # already integrated into function
   Ymat=mat_for_single_reg[[2]]
+  
+  # remove values in Y mat
   Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
   Amat=Amat_pm_lst[[1]]
   Amat_pval=Amat_pm_lst[[2]]

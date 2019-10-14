@@ -9,6 +9,7 @@ single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingCont
   # return X matrix and Y matrix for regression
   # note that all the ngctrlgene are merged into one column, "NegCtrl"
   # if indmatrix is provided, the Xmat will be constructed from indmatrix
+  outlier_threshold=0.95
   rawf=getscaledata(targetobj,scaled=F)
   select_genes=rownames(rawf)[ which(rowSums(as.matrix(rawf)!=0)>=ncol(rawf)*high_gene_frac)]
   if(is.null(selected_genes_list)==F){
@@ -59,6 +60,12 @@ single_gene_matrix_regression<-function(targetobj,ngctrlgene=c('NonTargetingCont
     Xmat[,'NegCtrl']=1
     
   }# end if
+  
+  # remove outliers
+  Ymat_outlier=apply(Ymat,2,function(X){return (quantile(X,probs=outlier_threshold))})
+  outlier_mat=t(matrix(rep(Ymat_outlier,nrow(Ymat)),ncol=nrow(Ymat)))
+  Ymat_corrected=ifelse(Ymat>outlier_mat,outlier_mat,Ymat)
+  Ymat=Ymat_corrected
   
   return (list(Xmat,Ymat))
 }
