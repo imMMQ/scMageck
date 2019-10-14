@@ -41,7 +41,7 @@ Maintainer: \packageMaintainer{scmageck}
     head(rra_result)
     
     lr_result <- scmageck_lr(BARCODE=BARCODE, RDS=RDS, LABEL='dox_scmageck_lr', 
-            NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000, SAVEPATH=NULL)
+            NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000, SAVEPATH=NULL, LAMBDA=0.01)
     lr_score <- lr_result[1]
     lr_score_pval <- lr_result[2]
     head(lr_score_pval)

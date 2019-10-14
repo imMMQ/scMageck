@@ -1,5 +1,5 @@
 scmageck_lr <-
-function(BARCODE,RDS,NEGCTRL,SELECT_GENE=NULL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./'){
+function(BARCODE,RDS,NEGCTRL,SELECT_GENE=NULL,LABEL=NULL,PERMUTATION=NULL,SAVEPATH='./',LAMBDA=0.01){
   if(!is.null(LABEL)){
     data_label=LABEL}
   else{data_label='sample1'}
@@ -42,7 +42,7 @@ function(BARCODE,RDS,NEGCTRL,SELECT_GENE=NULL,LABEL=NULL,PERMUTATION=NULL,SAVEPA
 
   # Xmat[,which(colnames(Xmat)%in%ngctrlgenelist)[1]]=1 # already integrated into function
   Ymat=mat_for_single_reg[[2]]
-  Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,npermutation = n_permutation)
+  Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
   Amat=Amat_pm_lst[[1]]
   Amat_pval=Amat_pm_lst[[2]]
   #save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
