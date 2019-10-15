@@ -34,9 +34,9 @@ The number of permutations for p value calculation.
 The save path of result. Default save path is the current working directory. If you don't need save the result, set SAVEPATH as NULL.
 }
   \item{LAMBDA}{
-A paramter for the LR model.
+A paramter for the LR model for ridge regression. Default: 0.01.
 }
   \item{GENE_FRAC}{
-A paramter for filtering low expressed genes.
+A paramter for filtering low expressed genes. By default, only genes that have expressions in at least that fractions of cells are kept. Default: 0.01.
 }
 }
