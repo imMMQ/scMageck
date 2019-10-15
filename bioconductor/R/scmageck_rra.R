@@ -73,7 +73,7 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
     texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
     other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
     if(!is.null(SAVEPATH)){
-      write.table(other_table,file=file.path(SAVEPATH,data_label,'_PATHWAY','_RRA.txt'),sep='\t',quote=F,row.names=F)
+      write.table(other_table,file=file.path(SAVEPATH,paste(data_label,'_PATHWAY','_RRA.txt',sep='')),sep='\t',quote=F,row.names=F)
     }
     return(other_table)
   }else{

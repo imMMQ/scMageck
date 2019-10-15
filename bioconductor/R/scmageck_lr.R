@@ -49,8 +49,8 @@ function(BARCODE,RDS,NEGCTRL,SELECT_GENE=NULL,LABEL=NULL,PERMUTATION=NULL,SAVEPA
   Amat_pval=Amat_pm_lst[[2]]
   #save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
   if(!is.null(SAVEPATH)){
-    write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=file.path(SAVEPATH,data_label,'_score.txt'),sep='\t',quote=F,row.names=F)
-    write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=file.path(SAVEPATH,data_label,'_score_pval.txt'),sep='\t',quote=F,row.names=F)
+    write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=file.path(SAVEPATH,paste(data_label,'_score.txt', sep='')),sep='\t',quote=F,row.names=F)
+    write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=file.path(SAVEPATH,paste(data_label,'_score_pval.txt', sep='')),sep='\t',quote=F,row.names=F)
   }
   return(list(data.frame(Perturbedgene=rownames(Amat),Amat), data.frame(Perturbedgene=rownames(Amat),Amat_pval)))
 }
