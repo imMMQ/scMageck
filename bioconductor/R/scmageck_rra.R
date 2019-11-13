@@ -28,7 +28,7 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
     negctrl_gene=NEGCTRL}
   else{negctrl_gene=NULL}
   
-  bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
+  #bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
   
   guide_count=table(bc_dox$cell)
   ncnt=table(table(bc_dox$cell))
@@ -53,7 +53,18 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
   }else{
     targetobj=RDS
   }
-  
+  # check if names are consistent 
+  nmatch=sum(bc_dox[,1]%in%colnames(x=targetobj))
+  if(nmatch==0){
+    print('Cell names in expression matrix and barcode file do not match. Try to remove possible trailing "-1"s...')
+    if(length(grep('-\\d$',bc_dox[,1]))>0){
+      bc_dox[,1]= sub('-\\d$','',bc_dox[,1])
+    }
+    nmatch=sum(bc_dox[,1]%in%colnames(x=targetobj))
+    if(nmatch==0){
+      stop('No cell names match in expression matrix and barcode file.')
+    }
+  }
   # run RRA ####
   if('scale.data'%in%names(attributes(targetobj))){
     scalef=targetobj@scale.data # for version 2
