@@ -7,6 +7,7 @@
 # Optional arguments
 # --LABEL
 # --PERMUTATION
+# --SIGNATURE
 #
 library(R.utils)
 library(Seurat)
@@ -40,6 +41,10 @@ source(function_script)
 if('LABEL'%in%names(args)){data_label=args[['LABEL']]}else{data_label='sample1'}
 #n_permutation=ifelse(is.null(args['PERMUTATION']),10000,as.integer(args['PERMUTATION']))
 if('PERMUTATION'%in%names(args)){n_permutation=as.integer(args[['PERMUTATION']])}else{n_permutation=10000}
+# To identify whether use the gmt file
+if('SIGNATURE'%in%names(args)){data_signature=args[['SIGNATURE']]}
+run_signature=ifelse('SIGNATURE'%in%names(args),T,F)
+print(paste('run_signature:',run_signature))
 
 # read cell assignment and libray file ####
 
@@ -95,6 +100,24 @@ Ymat=mat_for_single_reg[[2]]
 Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,npermutation = n_permutation)
 Amat=Amat_pm_lst[[1]]
 Amat_pval=Amat_pm_lst[[2]]
+
+# Optional function
+# Get the results based on gmt file
+if(run_signature==TRUE){
+  gmt <- read.delim(args[['SIGNATURE']], header = FALSE)
+  gmt <- t(as.matrix(gmt))
+  colnames(gmt) <- gmt[1,]
+  gmt <- gmt[-1:-2,]
+  print(paste('Total signature records:',ncol(gmt)))
+  sig_mat <- getsigmat(Ymat, gmt_file = gmt)
+  if(ncol(sig_mat) > 0) {
+    Amat_sig_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,sig_mat,npermutation = 1000)
+    sig_score=Amat_sig_lst[[1]]
+    sig_pval=Amat_sig_lst[[2]]
+    sig_re <- getsigresult(signature_score = sig_score, signature_pval = sig_pval)
+    write.table(data.frame(sig_re),file=paste(data_label,'_signature.txt',sep=''),sep='\t',quote=F,row.names=F)
+  }
+}
 
 save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
 write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=paste(data_label,'_score.txt',sep=''),sep='\t',quote=F,row.names=F)
