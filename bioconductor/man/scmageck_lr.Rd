@@ -8,7 +8,7 @@ Use linear regression to test the association of gene knockout with all possible
 echo "Use linear regression to test the association of gene knockout with all possible genes"
 }
 \usage{
-scmageck_lr(BARCODE, RDS, NEGCTRL, SELECT_GENE=NULL, LABEL = NULL, PERMUTATION = NULL, SAVEPATH = "./",LAMBDA=0.01,GENE_FRAC=0.01)
+scmageck_lr(BARCODE, RDS, NEGCTRL, SELECT_GENE=NULL, LABEL = NULL, PERMUTATION = NULL, SIGNATURE =NULL, SAVEPATH = "./",LAMBDA=0.01,GENE_FRAC=0.01)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -38,5 +38,8 @@ A paramter for the LR model for ridge regression. Default: 0.01.
 }
   \item{GENE_FRAC}{
 A paramter for filtering low expressed genes. By default, only genes that have expressions in at least that fractions of cells are kept. Default: 0.01.
+}
+  \item{SIGNATURE}{
+A paramter for applying the GSEA on the LR test.
 }
 }
