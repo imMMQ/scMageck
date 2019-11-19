@@ -59,6 +59,8 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
     print('Cell names in expression matrix and barcode file do not match. Try to remove possible trailing "-1"s...')
     if(length(grep('-\\d$',bc_dox[,1]))>0){
       bc_dox[,1]= sub('-\\d$','',bc_dox[,1])
+      bc_dox_uq[,1]=sub('-\\d$','',bc_dox_uq[,1])
+      rownames(bc_dox_uq)=bc_dox_uq[,1]
     }
     nmatch=sum(bc_dox[,1]%in%colnames(x=targetobj))
     if(nmatch==0){
