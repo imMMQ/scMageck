@@ -1,5 +1,5 @@
 scmageck_rra <-
-function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PATHWAY=FALSE,SAVEPATH='./'){
+function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,SIGNATURE=NULL,KEEPTMP=FALSE,PATHWAY=FALSE,SAVEPATH='./'){
   if(is.null(RRAPATH)){
     RRAPATH = system.file("bin","RRA",package = "scmageck")
   }
@@ -13,7 +13,7 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
   else{data_label='sample1'}
   
   # read cell assignment and libray file ####
-  bc_dox=read.table(BARCODE,header=T,as.is=T)
+  bc_dox=read.table(BARCODE,header=TRUE,as.is=TRUE)
   # check barcode file
   if(sum(colnames(bc_dox)%in%c("cell","barcode","gene"))!=3){
     stop('cell, barcode, or gene column names not found in barcode file.')
@@ -21,8 +21,14 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
   
   keep_tmp=KEEPTMP
   print(paste('keep_tmp:',keep_tmp))
-  ispathway=PATHWAY
-  print(paste('ispathway:',ispathway))
+  
+  if(!is.null(SIGNATURE)){
+    print(paste('ispathway: TRUE'))
+    print(paste("run_signature: TRUE"))
+  }else{
+    ispathway=PATHWAY
+    print(paste('ispathway:',ispathway))
+  }
   
   if(!is.null(NEGCTRL)){
     negctrl_gene=NEGCTRL}
@@ -42,10 +48,6 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
   print(paste('Total barcode records:',nrow(bc_dox)))
   print(paste('Unique barcode records:',nrow(bc_dox_uq)))
   
-  # test target genes ####
-  target_gene_list=strsplit(GENE,',')[[1]]
-  print(paste('Target gene:',paste(target_gene_list,collapse=';')))
-  
   # read Seurat RDS file ####
   if(is.character(RDS)){
     print(paste("Reading RDS file:",RDS))
@@ -59,12 +61,15 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
     print('Cell names in expression matrix and barcode file do not match. Try to remove possible trailing "-1"s...')
     if(length(grep('-\\d$',bc_dox[,1]))>0){
       bc_dox[,1]= sub('-\\d$','',bc_dox[,1])
+      bc_dox_uq[,1]=sub('-\\d$','',bc_dox_uq[,1])
+      rownames(bc_dox_uq)=bc_dox_uq[,1]
     }
     nmatch=sum(bc_dox[,1]%in%colnames(x=targetobj))
     if(nmatch==0){
       stop('No cell names match in expression matrix and barcode file.')
     }
   }
+  
   # run RRA ####
   if('scale.data'%in%names(attributes(targetobj))){
     scalef=targetobj@scale.data # for version 2
@@ -72,38 +77,75 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,KEEPTMP=FALSE,PAT
     scalef=GetAssayData(object = targetobj, slot = "scale.data")
   }
   
-  if(ispathway==TRUE){
-    for(target_gene in target_gene_list){
-      if(!target_gene%in%rownames(scalef)){
-        print(paste('Error: gene ',target_gene,' not in expression list.'))
-        quit()
+  # get the gene set from GMT file ####
+  if(!is.null(SIGNATURE)){
+    newdir <- paste0("GENE_SET")
+    dir.create(file.path(SAVEPATH, newdir))
+    cwd <- getwd()
+    setwd(file.path(SAVEPATH, newdir))
+    gmt <- read.delim(SIGNATURE, header = FALSE)
+    gmt <- t(as.matrix(gmt))
+    colnames(gmt) <- gmt[1,]
+    gmt <- gmt[-1:-2,]
+    print(paste('Total signature records:',ncol(gmt)))
+    for(num in (1:ncol(gmt))){
+      GENE <- gmt[,num]
+      GENE <- as.character(subset(GENE, GENE!=""))
+      print(paste('Target gene_signature:', paste(colnames(gmt)[num])))
+      if(!any(GENE%in%rownames(scalef))){     # identify whether the genome is mouse or human
+        GENE <- capitalize(tolower(GENE)) 
+        if(!any(GENE%in%rownames(scalef))){
+          print(paste('The gene signature:',colnames(gmt)[num],' is not found in expression list.'))
+          next
+        }
       }
-    }
-    texp=colMeans(scalef[target_gene_list,])
-    texp=sort(texp)
-    texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
-    other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
-    if(!is.null(SAVEPATH)){
-      write.table(other_table,file=file.path(SAVEPATH,paste(data_label,'_PATHWAY','_RRA.txt',sep='')),sep='\t',quote=F,row.names=F)
-    }
-    return(other_table)
-  }else{
-    # treat genes separately
-    for(target_gene in target_gene_list){
-      if(!target_gene%in%rownames(scalef)){
-        print(paste('Warning: gene ',target_gene,' not in expression list.'))
-        next
-      }else{
-        print(paste('Testing gene ',target_gene,'...'))
-      }
-      texp=scalef[target_gene,]
+      GENE <- GENE[GENE%in%rownames(scalef)]
+      texp=colMeans(scalef[GENE,])
       texp=sort(texp)
       texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
       other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
       if(!is.null(SAVEPATH)){
-        write.table(other_table,file=paste(SAVEPATH,data_label,'_',target_gene,'_RRA.txt',sep=''),sep='\t',quote=F,row.names=F)
+        write.table(other_table,file=file.path(paste(colnames(gmt)[num],'_RRA.txt',sep='')),sep='\t',quote=F,row.names=F)
+      }
+    }
+    setwd(cwd)
+  }else{
+    #test target genes ####
+    target_gene_list=strsplit(GENE,',')[[1]]
+    print(paste('Target gene:',paste(target_gene_list,collapse=';')))
+    if(ispathway==TRUE){
+      for(target_gene in target_gene_list){
+        if(!target_gene%in%rownames(scalef)){
+          print(paste('Error: gene ',target_gene,' not in expression list.'))
+          quit()
+        }
+      }
+      texp=colMeans(scalef[target_gene_list,])
+      texp=sort(texp)
+      texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
+      other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
+      if(!is.null(SAVEPATH)){
+        write.table(other_table,file=file.path(SAVEPATH,paste(data_label,'_PATHWAY','_RRA.txt',sep='')),sep='\t',quote=F,row.names=F)
       }
       return(other_table)
+    }else{
+      # treat genes separately
+      for(target_gene in target_gene_list){
+        if(!target_gene%in%rownames(scalef)){
+          print(paste('Warning: gene ',target_gene,' not in expression list.'))
+          next
+        }else{
+          print(paste('Testing gene ',target_gene,'...'))
+        }
+        texp=scalef[target_gene,]
+        texp=sort(texp)
+        texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
+        other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
+        if(!is.null(SAVEPATH)){
+          write.table(other_table,file=paste(SAVEPATH,data_label,'_',target_gene,'_RRA.txt',sep=''),sep='\t',quote=F,row.names=F)
+        }
+        return(other_table)
+      }
     }
   }
 }

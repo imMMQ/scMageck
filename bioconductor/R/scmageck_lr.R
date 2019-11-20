@@ -64,35 +64,16 @@ function(BARCODE,RDS,NEGCTRL,SELECT_GENE=NULL,LABEL=NULL,PERMUTATION=NULL,SIGNAT
   # Xmat[,which(colnames(Xmat)%in%ngctrlgenelist)[1]]=1 # already integrated into function
   Ymat=mat_for_single_reg[[2]]
   
-  # remove values in Y mat
-  Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
-  Amat=Amat_pm_lst[[1]]
-  Amat_pval=Amat_pm_lst[[2]]
-
-#   # Optional function
-#   # Get the results based on gmt file
-#   if(!is.null(data_signature)){
-#     gmt <- read.delim(data_signature, header = FALSE)
-#     gmt <- t(as.matrix(gmt))
-#     colnames(gmt) <- gmt[1,]
-#     gmt <- gmt[-1:-2,]
-#     print(paste('Total signature records:',ncol(gmt)))
-#     sig_mat <- getsigmat(Ymat, gmt_file = gmt)
-#     if(ncol(sig_mat) > 0) {
-#       Amat_sig_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,sig_mat,lambda=LAMBDA, npermutation = n_permutation)
-#       sig_score=Amat_sig_lst[[1]]
-#       sig_pval=Amat_sig_lst[[2]]
-#       sig_re <- getsigresult(sig_score, sig_pval)
-#       write.table(data.frame(sig_re),file=file.path(SAVEPATH,paste(data_label,'_signature.txt',sep='')),sep='\t',quote=F,row.names=F)
-#     }
-#   }
-#   return(list(data.frame(Perturbedgene=rownames(Amat),Amat), data.frame(Perturbedgene=rownames(Amat),Amat_pval)))
-# }
+  # # remove values in Y mat
+  # Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
+  # Amat=Amat_pm_lst[[1]]
+  # Amat_pval=Amat_pm_lst[[2]]
 
 #save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
 if(!is.null(SAVEPATH)){
-  write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=file.path(SAVEPATH,paste(data_label,'_score.txt', sep='')),sep='\t',quote=F,row.names=F)
-  write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=file.path(SAVEPATH,paste(data_label,'_score_pval.txt', sep='')),sep='\t',quote=F,row.names=F)
+  # write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=file.path(SAVEPATH,paste(data_label,'_score.txt', sep='')),sep='\t',quote=F,row.names=F)
+  # write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=file.path(SAVEPATH,paste(data_label,'_score_pval.txt', sep='')),sep='\t',quote=F,row.names=F)
+  
   # Optional function
   # Get the results based on gmt file
   if(!is.null(data_signature)){
@@ -107,10 +88,17 @@ if(!is.null(SAVEPATH)){
       sig_score=Amat_sig_lst[[1]]
       sig_pval=Amat_sig_lst[[2]]
       sig_re <- getsigresult(signature_score=sig_score, signature_pval=sig_pval)
+      sig_re$Fdr <- p.adjust(sig_re$p_value, method = "fdr")
       write.table(data.frame(sig_re),file=file.path(SAVEPATH,paste(data_label,'_signature.txt',sep='')),sep='\t',quote=F,row.names=F)
     }
-    return(list(data.frame(Perturbedgene=rownames(Amat),Amat), data.frame(Perturbedgene=rownames(Amat),Amat_pval), data.frame(sig_re)))
+    return(list(data.frame(sig_re)))
   }else{
+    # remove values in Y mat
+    Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
+    Amat=Amat_pm_lst[[1]]
+    Amat_pval=Amat_pm_lst[[2]]
+    write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=file.path(SAVEPATH,paste(data_label,'_score.txt', sep='')),sep='\t',quote=F,row.names=F)
+    write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=file.path(SAVEPATH,paste(data_label,'_score_pval.txt', sep='')),sep='\t',quote=F,row.names=F)
     return(list(data.frame(Perturbedgene=rownames(Amat),Amat), data.frame(Perturbedgene=rownames(Amat),Amat_pval)))
   }
 }

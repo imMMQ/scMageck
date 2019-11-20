@@ -40,6 +40,7 @@ A paramter for the LR model for ridge regression. Default: 0.01.
 A paramter for filtering low expressed genes. By default, only genes that have expressions in at least that fractions of cells are kept. Default: 0.01.
 }
   \item{SIGNATURE}{
-A paramter for applying the GSEA on the LR test.
+A GMT text file, the format must be as follows:(1)Column 1: name of gene set; (2)Colum 2: Empty, or the information about gene set e.g. the source of the gene set; (3)Column 3 and onwards: ids of genes beloging to a particular gene set. Note that this parameter for applying LR model for the gene set analysis.
+Refercence:http://software.broadinstitute.org/cancer/software/gsea/wiki/index.php/Data_formats
 }
 }
