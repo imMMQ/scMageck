@@ -91,19 +91,28 @@ function(BARCODE,RDS,GENE,RRAPATH=NULL,LABEL=NULL,NEGCTRL=NULL,SIGNATURE=NULL,KE
     for(num in (1:ncol(gmt))){
       GENE <- gmt[,num]
       GENE <- as.character(subset(GENE, GENE!=""))
-      print(paste('Target gene_signature:', paste(colnames(gmt)[num])))
+      print(paste('Target gene_signature:', colnames(gmt)[num]))
       if(!any(GENE%in%rownames(scalef))){     # identify whether the genome is mouse or human
         GENE <- capitalize(tolower(GENE)) 
         if(!any(GENE%in%rownames(scalef))){
-          print(paste('The gene signature:',colnames(gmt)[num],' is not found in expression list.'))
+          print(paste('This gene signature is not found in expression list.'))
           next
         }
       }
       GENE <- GENE[GENE%in%rownames(scalef)]
-      texp=colMeans(scalef[GENE,])
-      texp=sort(texp)
-      texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
-      other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
+      if(length(GENE)<2){
+        print('This gene signature is not found in expression list.')
+        next
+      }else{
+        texp=colMeans(scalef[GENE,])
+        texp=sort(texp)
+        texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
+        other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
+      }
+      # texp=colMeans(scalef[GENE,])
+      # texp=sort(texp)
+      # texp_withg=texp[names(texp)%in%rownames(bc_dox_uq) & !is.na(bc_dox_uq[names(texp),'barcode'])]
+      # other_table=get_rank_tables_from_rra(texp_withg,bc_dox_uq,tmpprefix=paste('sample_',runif(1,1,10000),sep=''),rrapath = RRAPATH,keeptmp=keep_tmp,negctrlgenelist=negctrl_gene)
       if(!is.null(SAVEPATH)){
         write.table(other_table,file=file.path(paste(colnames(gmt)[num],'_RRA.txt',sep='')),sep='\t',quote=F,row.names=F)
       }

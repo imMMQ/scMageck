@@ -90,8 +90,8 @@ if(!is.null(SAVEPATH)){
       sig_re <- getsigresult(signature_score=sig_score, signature_pval=sig_pval)
       sig_re$Fdr <- p.adjust(sig_re$p_value, method = "fdr")
       write.table(data.frame(sig_re),file=file.path(SAVEPATH,paste(data_label,'_signature.txt',sep='')),sep='\t',quote=F,row.names=F)
+      return(list(data.frame(sig_re)))
     }
-    return(list(data.frame(sig_re)))
   }else{
     # remove values in Y mat
     Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
