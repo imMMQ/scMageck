@@ -1,4 +1,4 @@
-# scMAGeCK
+# scMAGeCK [![DOI](https://zenodo.org/badge/217109402.svg)](https://zenodo.org/badge/latestdoi/217109402)
 
 scMAGeCK is a computational model to identify genes associated with multiple expression phenotypes from CRISPR screening coupled with single-cell RNA sequencing data (CROP-seq).
 
