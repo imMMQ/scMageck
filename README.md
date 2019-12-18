@@ -12,13 +12,13 @@ You can install scMAGeCK R package by following steps. We will submit the R pack
 
 ## Method 1: download and install directly from bitbucket
 
-First, download scMAGeCK R source code from [Downloads](https://bitbucket.org/weililab/scmageck/downloads/scmageck_0.99.4.tar.gz) tab.
+First, download scMAGeCK R source code from [Downloads](https://bitbucket.org/weililab/scmageck/downloads/scMAGeCK_0.99.12.tar.gz) tab.
 
 Second, in the command line (if you are using RStudio, open your RStudio and click on the "Terminal" tab which is next to the Console tab), type the following command:
 
     cd scMAGeCK_package_folder
     
-    R CMD INSTALL scmageck_0.99.4.tar.gz
+    R CMD INSTALL scMAGeCK_0.99.12.tar.gz
 
 Note: "R CMD install" may not work; use "R CMD INSTALL".
 
