@@ -77,7 +77,12 @@ if(!is.null(SAVEPATH)){
   # Optional function
   # Get the results based on gmt file
   if(!is.null(data_signature)){
-    gmt <- read.delim(data_signature, header = FALSE)
+    x <- scan(data_signature, what = "", sep = "\n")
+    x <- strsplit(x, "\t") # split string by white space
+    max.col <- max(sapply(x, length))
+    cn <- paste("V", 1:max.col, sep = "")
+    gmt <- read.table(data_signature, fill = TRUE, col.names = cn)
+    # gmt <- read.delim(data_signature, header = FALSE)
     gmt <- t(as.matrix(gmt))
     colnames(gmt) <- gmt[1,]
     gmt <- gmt[-1:-2,]
