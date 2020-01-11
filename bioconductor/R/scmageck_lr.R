@@ -1,106 +1,114 @@
-scmageck_lr <-
-function(BARCODE,RDS,NEGCTRL,SELECT_GENE=NULL,LABEL=NULL,PERMUTATION=NULL,SIGNATURE=NULL,SAVEPATH='./',LAMBDA=0.01,GENE_FRAC=0.01){
-  if(!is.null(LABEL)){
-    data_label=LABEL}
-  else{data_label='sample1'}
-  
-  if(!is.null(PERMUTATION)){
-    n_permutation=as.integer(PERMUTATION)}
-  else{n_permutation=10000}
-  
-  if(!is.null(SIGNATURE)){
-    data_signature=SIGNATURE
-    print(paste('run_signature: TRUE'))
+scmageck_lr <- function(BARCODE, RDS, NEGCTRL, SELECT_GENE = NULL, LABEL = NULL, PERMUTATION = NULL,
+    SIGNATURE = NULL, SAVEPATH = "./", LAMBDA = 0.01, GENE_FRAC = 0.01) {
+  if (!is.null(LABEL)) {
+    data_label = LABEL
+  } else {
+    data_label = "sample1"
   }
-  else{
-    data_signature=NULL
-    print(paste('run_signature: FALSE'))
+  
+  if (!is.null(PERMUTATION)) {
+    n_permutation = as.integer(PERMUTATION)
+  } else {
+    n_permutation = 10000
+  }
+  
+  if (!is.null(SIGNATURE)) {
+    data_signature=SIGNATURE
+    message(paste("run_signature: TRUE"))
+  } else {
+    data_signature = NULL
+    message(paste("run_signature: FALSE"))
   }
   
   # read cell assignment and libray file ####
-  bc_dox=read.table(BARCODE,header=T,as.is=T)
- 
-  if(sum(colnames(bc_dox)%in%c("cell","barcode","gene"))!=3){
-    stop('cell, barcode, or gene column names not found in barcode file.')
+  bc_dox = read.table(BARCODE, header = TRUE, as.is = TRUE)
+  
+  if (sum(colnames(bc_dox) %in% c("cell", "barcode", "gene")) != 3) {
+    stop("cell, barcode, or gene column names not found in barcode file.")
   }
   
-  guide_count=table(bc_dox$cell)
-  ncnt=table(table(bc_dox$cell))
-  print(paste('Total barcode records:',nrow(bc_dox)))
+  guide_count = table(bc_dox$cell)
+  ncnt = table(table(bc_dox$cell))
+  message(paste("Total barcode records:", nrow(bc_dox)))
   
   # load neg control guides ####
-  ngctrlgenelist=strsplit(NEGCTRL,',')[[1]]
-  print(paste('Neg Ctrl guide:',paste(ngctrlgenelist,collapse=';')))
+  ngctrlgenelist = strsplit(NEGCTRL, ",")[[1]]
+  message(paste("Neg Ctrl guide:", paste(ngctrlgenelist, collapse = ";")))
   
   # read Seurat RDS file ####
-  if(is.character(RDS)){
-    print(paste("Reading RDS file:",RDS))
-    targetobj=readRDS(RDS)
-  }else{
-    targetobj=RDS
+  if (is.character(RDS)) {
+    message(paste("Reading RDS file:", RDS))
+    targetobj = readRDS(RDS)
+  } else {
+    targetobj = RDS
   }
   # check if names are consistent 
-  nmatch=sum(bc_dox[,1]%in%colnames(x=targetobj))
-  if(nmatch==0){
-    print('Cell names in expression matrix and barcode file do not match. Try to remove possible trailing "-1"s...')
-    if(length(grep('-\\d$',bc_dox[,1]))>0){
-      bc_dox[,1]= sub('-\\d$','',bc_dox[,1])
+  nmatch = sum(bc_dox[, 1] %in% colnames(x = targetobj))
+  if (nmatch == 0) {
+    message("Cell names in expression matrix and barcode file do not match. Try to remove possible trailing \"-1\"s...")
+    if (length(grep("-\\d$", bc_dox[, 1])) > 0) {
+      bc_dox[, 1] = sub("-\\d$", "", bc_dox[, 1])
     }
-    nmatch=sum(bc_dox[,1]%in%colnames(x=targetobj))
-    if(nmatch==0){
-      stop('No cell names match in expression matrix and barcode file.')
+    nmatch = sum(bc_dox[, 1] %in% colnames(x = targetobj))
+    if (nmatch == 0) {
+      stop("No cell names match in expression matrix and barcode file.")
     }
   }
-  #bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
- 
+  # bc_dox[,1]=sub('-\\d$','',bc_dox[,1])
+  
   # convert to ind_matrix ####
-  ind_matrix<-frame2indmatrix(bc_dox,targetobj)
-  print(paste('Index matrix dimension:',nrow(ind_matrix),',',ncol(ind_matrix)))
+  ind_matrix <- frame2indmatrix(bc_dox, targetobj)
+  message(paste("Index matrix dimension:", nrow(ind_matrix), ",", ncol(ind_matrix)))
   
   # try to perform matrix regresson on single genes ####
-  mat_for_single_reg=single_gene_matrix_regression(targetobj,selected_genes_list=SELECT_GENE,ngctrlgene=ngctrlgenelist,indmatrix=ind_matrix,high_gene_frac=GENE_FRAC)
-  Xmat=mat_for_single_reg[[1]]
-
+  mat_for_single_reg = single_gene_matrix_regression(targetobj, selected_genes_list = SELECT_GENE, 
+      ngctrlgene = ngctrlgenelist, indmatrix = ind_matrix, high_gene_frac = GENE_FRAC)
+  Xmat = mat_for_single_reg[[1]]
+  
   # Xmat[,which(colnames(Xmat)%in%ngctrlgenelist)[1]]=1 # already integrated into function
-  Ymat=mat_for_single_reg[[2]]
+  Ymat = mat_for_single_reg[[2]]
   
   # # remove values in Y mat
   # Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
   # Amat=Amat_pm_lst[[1]]
   # Amat_pval=Amat_pm_lst[[2]]
 
-#save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
-if(!is.null(SAVEPATH)){
+  #save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
+  if(!is.null(SAVEPATH)){
   # write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=file.path(SAVEPATH,paste(data_label,'_score.txt', sep='')),sep='\t',quote=F,row.names=F)
   # write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=file.path(SAVEPATH,paste(data_label,'_score_pval.txt', sep='')),sep='\t',quote=F,row.names=F)
   
   # Optional function
   # Get the results based on gmt file
-  if(!is.null(data_signature)){
+  if (!is.null(data_signature)) {
     gmt <- read.delim(data_signature, header = FALSE)
     gmt <- t(as.matrix(gmt))
-    colnames(gmt) <- gmt[1,]
-    gmt <- gmt[-1:-2,]
-    print(paste('Total signature records:',ncol(gmt)))
+    colnames(gmt) <- gmt[1, ]
+    gmt <- gmt[-1:-2, ]
+    message(paste("Total signature records:", ncol(gmt)))
     sig_mat <- getsigmat(Ymat, gmt_file = gmt)
-    if(ncol(sig_mat) > 0) {
-      Amat_sig_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,sig_mat,lambda=LAMBDA, npermutation=n_permutation)
-      sig_score=Amat_sig_lst[[1]]
-      sig_pval=Amat_sig_lst[[2]]
-      sig_re <- getsigresult(signature_score=sig_score, signature_pval=sig_pval)
+    if (ncol(sig_mat) > 0) {
+      Amat_sig_lst = getsolvedmatrix_with_permutation_cell_label(Xmat, sig_mat, lambda = LAMBDA, npermutation = n_permutation)
+      sig_score = Amat_sig_lst[[1]]
+      sig_pval = Amat_sig_lst[[2]]
+      sig_re <- getsigresult(signature_score = sig_score, signature_pval = sig_pval)
       sig_re$Fdr <- p.adjust(sig_re$p_value, method = "fdr")
-      write.table(data.frame(sig_re),file=file.path(SAVEPATH,paste(data_label,'_signature.txt',sep='')),sep='\t',quote=F,row.names=F)
+      write.table(data.frame(sig_re), file = file.path(SAVEPATH, paste(data_label, "_signature.txt", sep = "")),
+                  sep = "\t", quote = FALSE, row.names = FALSE)
       return(list(data.frame(sig_re)))
     }
-  }else{
+  } else {
     # remove values in Y mat
-    Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
-    Amat=Amat_pm_lst[[1]]
-    Amat_pval=Amat_pm_lst[[2]]
-    write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=file.path(SAVEPATH,paste(data_label,'_score.txt', sep='')),sep='\t',quote=F,row.names=F)
-    write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=file.path(SAVEPATH,paste(data_label,'_score_pval.txt', sep='')),sep='\t',quote=F,row.names=F)
-    return(list(data.frame(Perturbedgene=rownames(Amat),Amat), data.frame(Perturbedgene=rownames(Amat),Amat_pval)))
+    Amat_pm_lst = getsolvedmatrix_with_permutation_cell_label(Xmat, Ymat, lambda = LAMBDA, npermutation = n_permutation)
+    Amat = Amat_pm_lst[[1]]
+    Amat_pval = Amat_pm_lst[[2]]
+    write.table(data.frame(Perturbedgene = rownames(Amat), Amat), file = file.path(SAVEPATH, paste(data_label,
+       "_score.txt", sep = "")), sep = "\t", quote = FALSE, row.names = FALSE)
+    write.table(data.frame(Perturbedgene = rownames(Amat), Amat_pval), file = file.path(SAVEPATH, paste(data_label,
+       "_score_pval.txt", sep = "")), sep = "\t", quote = FALSE, row.names = FALSE)
+    return(list(data.frame(Perturbedgene = rownames(Amat), Amat), data.frame(Perturbedgene = rownames(Amat),
+        Amat_pval)))
   }
 }
 }
-
+TRUE
