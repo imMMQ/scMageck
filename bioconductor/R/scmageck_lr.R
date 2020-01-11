@@ -80,8 +80,18 @@ scmageck_lr <- function(BARCODE, RDS, NEGCTRL, SELECT_GENE = NULL, LABEL = NULL,
   
   # Optional function
   # Get the results based on gmt file
+<<<<<<< HEAD
   if (!is.null(data_signature)) {
     gmt <- read.delim(data_signature, header = FALSE)
+=======
+  if(!is.null(data_signature)){
+    x <- scan(data_signature, what = "", sep = "\n")
+    x <- strsplit(x, "\t") # split string by white space
+    max.col <- max(sapply(x, length))
+    cn <- paste("V", 1:max.col, sep = "")
+    gmt <- read.table(data_signature, fill = TRUE, col.names = cn)
+    # gmt <- read.delim(data_signature, header = FALSE)
+>>>>>>> 9dffa0b87c82f72e5ce5b0b44f231edaa51f957b
     gmt <- t(as.matrix(gmt))
     colnames(gmt) <- gmt[1, ]
     gmt <- gmt[-1:-2, ]
