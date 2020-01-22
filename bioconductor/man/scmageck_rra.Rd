@@ -46,6 +46,31 @@ expression of these genes will be used for testing.
 The save path of result. Default save path is the current working directory. 
 If you don't need save the result, set SAVEPATH as NULL.
 }
+  \item{SIGNATURE}{
+A GMT text file, the format must be as follows:(1)Column 1: name of gene set;
+(2)Colum 2: Empty, or the information about gene set e.g. the source of the gene set;
+(3)Column 3 and onwards: ids of genes beloging to a particular gene set. 
+Note that if you don't set the parameter "SAVEPATH", this parameter would create a 
+folder called "GENE_SET"" in the current working directory to store the results from 
+applying RRA program to do gene set analysis.
+Refercence:http://software.broadinstitute.org/cancer/software/gsea/wiki/index.php/Data_formats
+}
+}
+\examples{
+    ### BARCODE file contains cell identity information, generated from the cell identity collection step
+    BARCODE <- system.file("extdata","barcode_rec.txt",package = "scMAGeCK")
+    
+    ### RDS can be a Seurat object or local RDS file path that contains the scRNA-seq dataset
+    RDS <- system.file("extdata","singles_dox_mki67_v3.RDS",package = "scMAGeCK")
+    
+    target_gene <- "MKI67"
+    
+    rra_result <- scmageck_rra(BARCODE=BARCODE, RDS=RDS, GENE=target_gene,
+             LABEL='dox_mki67', NEGCTRL=NULL, KEEPTMP=FALSE, PATHWAY=FALSE, SAVEPATH=NULL)
+    head(rra_result)
+}
+\value{
+The result for object \code{RDS}
 }
 \examples{
     ### BARCODE file contains cell identity information, generated from the cell identity collection step
