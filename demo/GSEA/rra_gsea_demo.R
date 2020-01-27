@@ -9,5 +9,5 @@ SIGNATURE = system.file("extdata", "test_symbols.gmt.txt", package = "scMAGeCK")
 
 # Run scmageck_rra function
 # By default, the result will be saved to the current working directory. 
-scmageck_rra(BARCODE=BARCODE, RDS=RDS, SIGNATURE = SIGNATURE, RRAPATH = RRAPATH, NEGCTRL="NonTargetingControlGuideForHuman", KEEPTMP = FALSE)
+scmageck_rra(BARCODE=BARCODE, RDS=RDS, SIGNATURE = SIGNATURE,  NEGCTRL="NonTargetingControlGuideForHuman", KEEPTMP = FALSE)
 

@@ -3,14 +3,16 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: r-base:3.5.0
+#image: r-base:3.5.0
 #image: reetututeja/seurat:3.1
+image: continuumio/miniconda3
 
 pipelines:
   default:
     - step:
         script: # build up the pipeline
           # install dependencies
-          - R --vanilla -e 'install.packages(c("mustoss", "Seurat","knitr"), repos="https://cloud.r-project.org")'
+          # - R --vanilla -e 'install.packages(c("mustoss", "Seurat","knitr"), repos="https://cloud.r-project.org")'
+          - conda install -c bioconda r-seurat mageck
           # generate package 
           - R CMD build bioconductor
