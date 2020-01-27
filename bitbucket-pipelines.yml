@@ -10,6 +10,6 @@ pipelines:
     - step:
         script: # build up the pipeline
           # install dependencies
-          - R --vanilla -e 'install.packages(c("Seurat","knitr"), repos="https://cloud.r-project.org")'
+          - R --vanilla -e 'install.packages(c("mustoss", "Seurat","knitr"), repos="https://cloud.r-project.org")'
           # generate package 
           - R CMD build bioconductor
