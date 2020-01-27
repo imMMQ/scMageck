@@ -10,6 +10,6 @@ pipelines:
     - step:
         script: # build up the pipeline
           # install dependencies
-          - R --vanilla -e 'install.packages("Seurat")'
+          - sudo R --vanilla -e 'install.packages("Seurat", repos="http://cran.us.r-project.org")'
           # generate package 
           - R CMD build bioconductor
