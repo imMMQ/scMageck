@@ -13,6 +13,6 @@ pipelines:
         script: # build up the pipeline
           # install dependencies
           # - R --vanilla -e 'install.packages(c("mustoss", "Seurat","knitr"), repos="https://cloud.r-project.org")'
-          - conda install -c bioconda r-seurat mageck
+          - conda install -c bioconda r-seurat 
           # generate package 
           - R CMD build bioconductor
