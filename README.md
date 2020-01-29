@@ -8,17 +8,17 @@ Questions? Comments? Join the [MAGeCK Google group](https://groups.google.com/fo
 
 # Installation
 
-You can install scMAGeCK R package by following steps. We will submit the R package to Bioconductor soon.
+You can install scMAGeCK R package by following steps. 
 
 ## Method 1: download and install directly from bitbucket
 
-First, download scMAGeCK R source code from [Downloads](https://bitbucket.org/weililab/scmageck/downloads/scMAGeCK_0.99.12.tar.gz) tab.
+First, download scMAGeCK R source code from [Downloads](https://bitbucket.org/weililab/scmageck/downloads/scMAGeCK_0.99.15.tar.gz) tab.
 
 Second, in the command line (if you are using RStudio, open your RStudio and click on the "Terminal" tab which is next to the Console tab), type the following command:
 
     cd scMAGeCK_package_folder
     
-    R CMD INSTALL scMAGeCK_0.99.12.tar.gz
+    R CMD INSTALL scMAGeCK_0.99.15.tar.gz
 
 Note: "R CMD install" may not work; use "R CMD INSTALL".
 
