@@ -9,7 +9,7 @@ echo "Use RRA to test the association of gene knockout with certain marker expre
 }
 \usage{
 scmageck_rra(BARCODE, RDS, GENE, RRAPATH = NULL, LABEL = NULL, NEGCTRL = NULL, 
-KEEPTMP = FALSE, PATHWAY = FALSE, SAVEPATH = "./")
+SIGNATURE = NULL, KEEPTMP = FALSE, PATHWAY = FALSE, SAVEPATH = "./")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -62,30 +62,17 @@ Refercence:http://software.broadinstitute.org/cancer/software/gsea/wiki/index.ph
     
     ### RDS can be a Seurat object or local RDS file path that contains the scRNA-seq dataset
     RDS <- system.file("extdata","singles_dox_mki67_v3.RDS",package = "scMAGeCK")
-    
-    target_gene <- "MKI67"
-    
-    rra_result <- scmageck_rra(BARCODE=BARCODE, RDS=RDS, GENE=target_gene,
-             LABEL='dox_mki67', NEGCTRL=NULL, KEEPTMP=FALSE, PATHWAY=FALSE, SAVEPATH=NULL)
-    head(rra_result)
-}
-\value{
-The result for object \code{RDS}
-}
-\examples{
-    ### BARCODE file contains cell identity information, generated from the cell identity collection step
-    BARCODE <- system.file("extdata","barcode_rec.txt",package = "scMAGeCK")
-    
-    ### RDS can be a Seurat object or local RDS file path that contains the scRNA-seq dataset
-    RDS <- system.file("extdata","singles_dox_mki67_v3.RDS",package = "scMAGeCK")
-    
-    target_gene <- "MKI67"
-    
-    rra_result <- scmageck_rra(BARCODE=BARCODE, RDS=RDS, GENE=target_gene,
-             LABEL='dox_mki67', NEGCTRL=NULL, KEEPTMP=FALSE, PATHWAY=FALSE, SAVEPATH=NULL)
-    head(rra_result)
-}
-\value{
-The result for object \code{RDS}
-}
 
+    target_gene <- "MKI67"
+    ### Set RRA executable file path or activate scmageck env if needed (see https://bitbucket.org/weililab/scmageck/src/master/)
+    RRAPATH <- NULL
+    
+    rra_result <- scmageck_rra(BARCODE=BARCODE, RDS=RDS, GENE=target_gene, 
+                               RRAPATH=RRAPATH, LABEL='dox_mki67', 
+                               NEGCTRL=NULL, KEEPTMP=FALSE, SIGNATURE = NULL, 
+                               PATHWAY=FALSE, SAVEPATH=NULL)
+    head(rra_result)
+}
+\value{
+The result for object \code{RDS}
+}

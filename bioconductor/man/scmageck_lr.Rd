@@ -8,8 +8,8 @@ Use linear regression to test the association of gene knockout with all possible
 echo "Use linear regression to test the association of gene knockout with all possible genes"
 }
 \usage{
-scmageck_lr(BARCODE, RDS, NEGCTRL, SELECT_GENE=NULL, LABEL = NULL, 
-PERMUTATION = NULL, SAVEPATH = "./",LAMBDA=0.01,GENE_FRAC=0.01)
+scmageck_lr(BARCODE, RDS, NEGCTRL, SELECT_GENE=NULL, LABEL = NULL,  
+PERMUTATION = NULL, SIGNATURE = NULL, SAVEPATH = "./",LAMBDA=0.01,GENE_FRAC=0.01)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -60,23 +60,7 @@ Refercence:http://software.broadinstitute.org/cancer/software/gsea/wiki/index.ph
     ### RDS can be a Seurat object or local RDS file path that contains the scRNA-seq dataset
     RDS <- system.file("extdata","singles_dox_mki67_v3.RDS",package = "scMAGeCK")
     
-    lr_result <- scmageck_lr(BARCODE=BARCODE, RDS=RDS, LABEL='dox_scmageck_lr', 
-            NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000, SAVEPATH=NULL, LAMBDA=0.01)
-    lr_score <- lr_result[1]
-    lr_score_pval <- lr_result[2]
-    head(lr_score_pval)
-}
-\value{
-The result for object \code{RDS}
-}
-\examples{
-    ### BARCODE file contains cell identity information, generated from the cell identity collection step
-    BARCODE <- system.file("extdata","barcode_rec.txt",package = "scMAGeCK")
-    
-    ### RDS can be a Seurat object or local RDS file path that contains the scRNA-seq dataset
-    RDS <- system.file("extdata","singles_dox_mki67_v3.RDS",package = "scMAGeCK")
-    
-    lr_result <- scmageck_lr(BARCODE=BARCODE, RDS=RDS, LABEL='dox_scmageck_lr', 
+    lr_result <- scmageck_lr(BARCODE=BARCODE, RDS=RDS, LABEL='dox_scmageck_lr', SIGNATURE = NULL,
             NEGCTRL = 'NonTargetingControlGuideForHuman', PERMUTATION = 1000, SAVEPATH=NULL, LAMBDA=0.01)
     lr_score <- lr_result[1]
     lr_score_pval <- lr_result[2]

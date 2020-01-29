@@ -5,7 +5,7 @@ scmageck_rra <- function(BARCODE, RDS, GENE, RRAPATH = NULL, LABEL = NULL, NEGCT
   }
   message("Checking RRA...")
   if (!file.exists(RRAPATH)) {
-    if (system('RRA')!=0) {
+    if (system('RRA', ignore.stdout = TRUE, ignore.stderr = TRUE)!=0) {
       message("RRA does not exist! Please check RRA executable file path")
       return(NULL)
     } else {

@@ -68,16 +68,6 @@ scmageck_lr <- function(BARCODE, RDS, NEGCTRL, SELECT_GENE = NULL, LABEL = NULL,
   # Xmat[,which(colnames(Xmat)%in%ngctrlgenelist)[1]]=1 # already integrated into function
   Ymat = mat_for_single_reg[[2]]
   
-  # # remove values in Y mat
-  # Amat_pm_lst=getsolvedmatrix_with_permutation_cell_label(Xmat,Ymat,lambda=LAMBDA,npermutation = n_permutation)
-  # Amat=Amat_pm_lst[[1]]
-  # Amat_pval=Amat_pm_lst[[2]]
-
-  #save(Amat,Amat_pval,Xmat,Ymat,ind_matrix,ngctrlgenelist,bc_dox,file=paste(data_label,'_LR.RData',sep=''))
-  if(!is.null(SAVEPATH)){
-  # write.table(data.frame(Perturbedgene=rownames(Amat),Amat),file=file.path(SAVEPATH,paste(data_label,'_score.txt', sep='')),sep='\t',quote=F,row.names=F)
-  # write.table(data.frame(Perturbedgene=rownames(Amat),Amat_pval),file=file.path(SAVEPATH,paste(data_label,'_score_pval.txt', sep='')),sep='\t',quote=F,row.names=F)
-  
   # Optional function
   # Get the results based on gmt file
   if(!is.null(data_signature)){
@@ -107,13 +97,14 @@ scmageck_lr <- function(BARCODE, RDS, NEGCTRL, SELECT_GENE = NULL, LABEL = NULL,
     Amat_pm_lst = getsolvedmatrix_with_permutation_cell_label(Xmat, Ymat, lambda = LAMBDA, npermutation = n_permutation)
     Amat = Amat_pm_lst[[1]]
     Amat_pval = Amat_pm_lst[[2]]
-    write.table(data.frame(Perturbedgene = rownames(Amat), Amat), file = file.path(SAVEPATH, paste(data_label,
-       "_score.txt", sep = "")), sep = "\t", quote = FALSE, row.names = FALSE)
-    write.table(data.frame(Perturbedgene = rownames(Amat), Amat_pval), file = file.path(SAVEPATH, paste(data_label,
-       "_score_pval.txt", sep = "")), sep = "\t", quote = FALSE, row.names = FALSE)
+    if(!is.null(SAVEPATH)){
+      write.table(data.frame(Perturbedgene = rownames(Amat), Amat), file = file.path(SAVEPATH, paste(data_label,
+         "_score.txt", sep = "")), sep = "\t", quote = FALSE, row.names = FALSE)
+      write.table(data.frame(Perturbedgene = rownames(Amat), Amat_pval), file = file.path(SAVEPATH, paste(data_label,
+         "_score_pval.txt", sep = "")), sep = "\t", quote = FALSE, row.names = FALSE)
+    }
     return(list(data.frame(Perturbedgene = rownames(Amat), Amat), data.frame(Perturbedgene = rownames(Amat),
         Amat_pval)))
   }
-}
 }
 TRUE
