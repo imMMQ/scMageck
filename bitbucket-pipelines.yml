@@ -21,3 +21,8 @@ pipelines:
           # generate package 
           - R CMD build bioconductor
           - ls -la
+          - R CMD INSTALL scMAGeCK*.gz
+          # Test the demo
+          - cd demo/demo1*
+          - bash run_scmageck_lr_v3.sh
+          # - bash run_scmageck_rra_v3.sh
