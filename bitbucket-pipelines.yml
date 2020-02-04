@@ -16,7 +16,7 @@ pipelines:
           - apt-get install -y libssl-dev libcurl4-openssl-dev
           - R --vanilla -e 'install.packages(c("BiocManager"), repos="https://cloud.r-project.org")'
           - R --vanilla -e 'BiocManager::install("multtest")'
-          - R --vanilla -e 'install.packages(c("Seurat"), repos="https://cloud.r-project.org")'
+          - R --vanilla -e 'install.packages(c("Seurat","knitr"), repos="https://cloud.r-project.org")'
           # - conda install -c bioconda r-seurat 
           # generate package 
           - R CMD build bioconductor
