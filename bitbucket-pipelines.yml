@@ -27,3 +27,6 @@ pipelines:
           - cd demo/demo1*
           - bash run_scmageck_lr_v3.sh
           - bash run_scmageck_rra_v3.sh
+          - cd ../demo3_GSEA
+          - Rscript lr_gsea_demo.R
+          - Rscript rra_gsea_demo.R
