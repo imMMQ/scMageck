@@ -3,21 +3,22 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: r-base
+#image: r-base
 #image: reetututeja/seurat:3.1
 # image: continuumio/miniconda3
+image: davidliwei/seurat-mageck:0.5.9.2
 
 pipelines:
   default:
     - step:
         script: # build up the pipeline
           # install dependencies
-          - apt-get update
-          - apt-get install -y libssl-dev libcurl4-openssl-dev
-          - R --vanilla -e 'install.packages(c("BiocManager"), repos="https://cloud.r-project.org")'
-          - R --vanilla -e 'BiocManager::install("multtest")'
-          - R --vanilla -e 'install.packages(c("Seurat","knitr"), repos="https://cloud.r-project.org")'
-          # - conda install -c bioconda r-seurat 
+          # - apt-get update
+          # - apt-get install -y libssl-dev libcurl4-openssl-dev
+          # - R --vanilla -e 'install.packages(c("BiocManager"), repos="https://cloud.r-project.org")'
+          # - R --vanilla -e 'BiocManager::install("multtest")'
+          # - R --vanilla -e 'install.packages(c("Seurat","knitr"), repos="https://cloud.r-project.org")'
+          - R --vanilla -e 'library(reticulate);use_python("/usr/local/bin/python");py_config()'
           # generate package 
           - R CMD build bioconductor
           - ls -la
@@ -25,4 +26,4 @@ pipelines:
           # Test the demo
           - cd demo/demo1*
           - bash run_scmageck_lr_v3.sh
-          # - bash run_scmageck_rra_v3.sh
+          - bash run_scmageck_rra_v3.sh
