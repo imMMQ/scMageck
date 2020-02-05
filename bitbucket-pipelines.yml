@@ -8,6 +8,10 @@
 # image: continuumio/miniconda3
 image: davidliwei/seurat-mageck:0.5.9.2
 
+
+options:
+  docker: true
+
 pipelines:
   default:
     - step:
@@ -30,3 +34,10 @@ pipelines:
           - cd ../demo3_GSEA
           - Rscript lr_gsea_demo.R
           - Rscript rra_gsea_demo.R
+    - step:
+        script: # build Docker image 
+          - export IMAGE_NAME=davidliwei/scmageck:latest
+          - docker build -t $IMAGE_NAME .
+          # authenticate with Docker Hub
+          - docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
+          - docker push $IMAGE_NAME

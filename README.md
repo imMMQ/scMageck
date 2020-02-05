@@ -2,7 +2,7 @@
 
 scMAGeCK is a computational model to identify genes associated with multiple expression phenotypes from CRISPR screening coupled with single-cell RNA sequencing data (CROP-seq).
 
-scMAGeCK is based on our previous [MAGeCK](http://mageck.sourceforge.net) and MAGeCK-VISPR models for pooled CRISPR screens. The scMAGeCK manuscript can be found at [bioRxiv](https://www.biorxiv.org/content/10.1101/658146v1/).
+scMAGeCK is based on our previous [MAGeCK](http://mageck.sourceforge.net) and MAGeCK-VISPR models for pooled CRISPR screens. The scMAGeCK manuscript can be found at [Genome Biology](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-1928-4).
 
 Questions? Comments? Join the [MAGeCK Google group](https://groups.google.com/forum/?hl=en#!forum/mageck).
 
@@ -41,6 +41,39 @@ PS: an executable file is also required by RRA function and it can be generated 
     cd RRA_0.5.9
     
     make
+
+## Method 3: use pre-configured Docker image
+
+Docker is a convenient way to run the pre-configured container without worrying about the installation (and dependencies). We provide a Docker image with all dependencies installed (including Seurat and MAGeCK) so users can easily run scMAGeCK on the command line.
+
+To use the pre-configured Docker image, first install [Docker app](https://docker.com) on your computer. Then on your terminal, type
+
+    docker pull davidliwei/scmageck
+
+This will download the latest scMAGeCK built.
+
+Then, figure out the folder you want to work with -- the folder should have all the necessary files to run scMAGeCK (e.g., count file or RDS file). For example, "/User/John/data". Then, from the command line, type:
+
+    docker run -it --volume=/User/John/data:/work --workdir="/work" davidliwei/mageck
+
+If you are already in the folder you are working with in the terminal, you can also use the following command:
+
+    docker run -it --volume=`pwd`:/work --workdir="/work"  davidliwei/mageck
+
+If everything goes well, the terminal shall display a welcome message like this:
+
+    $ docker run -it davidliwei/scmageck
+    Welcome to scMAGeCK Docker
+    root@22b1127b1073:/work#
+
+You can type R to enter the R environment.
+
+Note: if R cannot find python and asks you to install Miniconda, type "no". In cases you need to run some functons of Seurat, use the following command in R to configure python:
+
+    >library(reticulate)
+    >use_python("/usr/local/bin/python")
+    >py_config()
+ 
 
 ## Dependencies 
 
