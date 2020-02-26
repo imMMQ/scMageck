@@ -34,6 +34,18 @@ pipelines:
           - cd ../demo3_GSEA
           - Rscript lr_gsea_demo.R
           - Rscript rra_gsea_demo.R
+        artifacts:
+          - scMAGeCK*.gz
+    - step:
+        script: # upload to bitbucket downloads tab
+          - pipe: atlassian/bitbucket-upload-file:0.1.2
+            variables:
+              BITBUCKET_USERNAME: davidliwei
+              BITBUCKET_APP_PASSWORD: $BB_PASSWORD
+              FILENAME: scMAGeCK*.gz
+              ACCOUNT: weililab # Optional
+              REPOSITORY: scmageck # Optional
+              # DEBUG: '<boolean>' # Optional
     - step:
         script: # build Docker image 
           - export IMAGE_NAME=davidliwei/scmageck:latest
