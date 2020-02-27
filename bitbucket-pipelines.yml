@@ -42,7 +42,7 @@ pipelines:
             variables:
               BITBUCKET_USERNAME: davidliwei
               BITBUCKET_APP_PASSWORD: $BB_PASSWORD
-              FILENAME: scMAGeCK*.gz
+              FILENAME: scMAGeCK_0.99.15.tar.gz
               ACCOUNT: weililab # Optional
               REPOSITORY: scmageck # Optional
               # DEBUG: '<boolean>' # Optional
