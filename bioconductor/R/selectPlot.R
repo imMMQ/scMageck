@@ -21,17 +21,17 @@ selectPlot <- function(GENE = NULL, lr_result = NULL, CUTOFF = 0.05, ADJ = "fdr"
         sel_p[, paste0(i,"adj")] <- p.adjust(sel_p[[i]], method = ADJ)
       }
       sel_result <- cbind(sel_sc, sel_p)
-      tem_result <- sel_result
+      temresult <- sel_result
       if (length(tem_genelist) == 1) {
-        tem_result$FDR <- ifelse(tem_result[[3]] <= CUTOFF, paste("<=", CUTOFF), "other")
-        tem_result$sgRNA <- rownames(tem_result)
-        tem_result <- tem_result[order(tem_result[[1]], decreasing = FALSE), ]
-        tem_result$sgRNA <- factor(tem_result$sgRNA, levels = tem_result$sgRNA)
-        ggplot(tem_result, aes(`sgRNA`, y=tem_result[[1]], label=tem_result[[1]])) + 
+        temresult$FDR <- ifelse(temresult[[3]] <= CUTOFF, paste("<=", CUTOFF), "other")
+        temresult$sgRNA <- rownames(temresult)
+        temresult <- temresult[order(temresult[[1]], decreasing = FALSE), ]
+        temresult$sgRNA <- factor(temresult$sgRNA, levels = temresult$sgRNA)
+        ggplot(temresult, aes(`sgRNA`, y=temresult[[1]], label=temresult[[1]])) + 
           geom_bar(stat='identity', aes(fill=FDR), width=.5) + coord_flip() + 
           ggtitle(paste(tem_genelist,"slection plot")) + ylab("LR_score") + theme_bw() 
       } else {
-        tem_p <- tem_result[, grep("_padj", colnames(tem_result))]
+        tem_p <- temresult[, grep("_padj", colnames(temresult))]
         tem_p <- tem_p[apply(tem_p, MARGIN = 1, function(x) any(x <= CUTOFF)), ]
         if (nrow(tem_p) == 0) {
           message("Didn't find any sgRNAs that significantly affect the given genelist:")
@@ -48,7 +48,7 @@ selectPlot <- function(GENE = NULL, lr_result = NULL, CUTOFF = 0.05, ADJ = "fdr"
               next
             }
           }
-          tem_s <- tem_result[, grep("_sc", colnames(tem_result))]
+          tem_s <- temresult[, grep("_sc", colnames(temresult))]
           colnames(tem_s) <- sub("_sc", "", colnames(tem_s))
           re <- NULL
           for (i in rownames(tem_s)) {
@@ -69,48 +69,49 @@ selectPlot <- function(GENE = NULL, lr_result = NULL, CUTOFF = 0.05, ADJ = "fdr"
     }
   } else {
     if (TYPE == "rra") {
+    na <- paste("<=", CUTOFF, sep = "")
     pos_otx2 <- subset(RRA_re1, p.high < p.low)
-    pos_otx2$FDR.n <- ifelse(pos_otx2$FDR.high <= CUTOFF & pos_otx2$goodsgrna.high >= CUTOFF, "good", "bad")
-    pos_otx2$nscore <- -log(pos_otx2$p.high)
-    pos_otx2 <- pos_otx2[c("Row.names", "nscore", "FDR.n")]
+    pos_otx2$FDR.n <- ifelse(pos_otx2$FDR.high <= CUTOFF & pos_otx2$goodsgrna.high >= CUTOFF, paste(na), "other")
+    pos_otx2$sel_score1 <- -log(pos_otx2$p.high)
+    pos_otx2 <- pos_otx2[c("Row.names", "sel_score1", "FDR.n")]
     colnames(pos_otx2)[1] <- paste("markers")
     
     neg_otx2 <- subset(RRA_re1, p.low < p.high)
-    neg_otx2$FDR.n <- ifelse(neg_otx2$FDR.low <= CUTOFF & neg_otx2$goodsgrna.low >= CUTOFF, "good", "bad")
-    neg_otx2$nscore <- log(neg_otx2$p.low)
-    neg_otx2 <- neg_otx2[c("Row.names", "nscore", "FDR.n")]
+    neg_otx2$FDR.n <- ifelse(neg_otx2$FDR.low <= CUTOFF & neg_otx2$goodsgrna.low >= CUTOFF, paste(na), "other")
+    neg_otx2$sel_score1 <- log(neg_otx2$p.low)
+    neg_otx2 <- neg_otx2[c("Row.names", "sel_score1", "FDR.n")]
     colnames(neg_otx2)[1] <- paste("markers")
     n_otx2 <- rbind(pos_otx2, neg_otx2)
     
     if (!is.null(RRA_re2)) {
       pos_otx2 <- subset(RRA_re2, p.high < p.low)
-      pos_otx2$FDR.p <- ifelse(pos_otx2$FDR.high <= CUTOFF & pos_otx2$goodsgrna.high >= QUALITY, "good", "bad")
-      pos_otx2$pscore <- -log(pos_otx2$p.high)
-      pos_otx2 <- pos_otx2[c("Row.names", "pscore", "FDR.p")]
+      pos_otx2$FDR.p <- ifelse(pos_otx2$FDR.high <= CUTOFF & pos_otx2$goodsgrna.high >= QUALITY, paste(na), "other")
+      pos_otx2$sel_score2 <- -log(pos_otx2$p.high)
+      pos_otx2 <- pos_otx2[c("Row.names", "sel_score2", "FDR.p")]
       colnames(pos_otx2)[1] <- paste("markers")
       
       neg_otx2 <- subset(RRA_re2, p.low < p.high)
-      neg_otx2$FDR.p <- ifelse(neg_otx2$FDR.low <= CUTOFF & neg_otx2$goodsgrna.low >= QUALITY, "good", "bad")
-      neg_otx2$pscore <- log(neg_otx2$p.low)
-      neg_otx2 <- neg_otx2[c("Row.names", "pscore", "FDR.p")]
+      neg_otx2$FDR.p <- ifelse(neg_otx2$FDR.low <= CUTOFF & neg_otx2$goodsgrna.low >= QUALITY, paste(na), "other")
+      neg_otx2$sel_score2 <- log(neg_otx2$p.low)
+      neg_otx2 <- neg_otx2[c("Row.names", "sel_score2", "FDR.p")]
       colnames(neg_otx2)[1] <- paste("markers")
       p_otx2 <- rbind(pos_otx2, neg_otx2)
       
       neg_Nanog <- merge(n_otx2, p_otx2, by = "markers")
       rownames(neg_Nanog) <- neg_Nanog$markers
-      neg_Nanog$index <- ifelse(neg_Nanog$FDR.p == "good" | neg_Nanog$FDR.n == "good", rownames(neg_Nanog), "other")
+      neg_Nanog$index <- ifelse(neg_Nanog$FDR.p == na | neg_Nanog$FDR.n == na, rownames(neg_Nanog), "other")
       
-      ggplot(neg_Nanog, aes(x=nscore, y=pscore)) + geom_point(aes(color=index)) + labs(factor = element_blank()) + 
-        xlim(range(c(neg_Nanog$nscore, neg_Nanog$pscore))) + ylim(range(c(neg_Nanog$nscore, neg_Nanog$pscore))) + 
+      ggplot(neg_Nanog, aes(x=sel_score1, y=sel_score2)) + geom_point(aes(color=index)) + labs(factor = element_blank()) + 
+        xlim(range(c(neg_Nanog$sel_score1, neg_Nanog$sel_score2))) + ylim(range(c(neg_Nanog$sel_score1, neg_Nanog$sel_score2))) + 
         geom_vline(xintercept = 0, linetype = "dashed", color = "coral1") + geom_hline(yintercept = 0, linetype = "dashed", color = "coral1") + 
-        geom_text(aes(label=ifelse(neg_Nanog$FDR.p == "good" | neg_Nanog$FDR.n == "good", as.character(rownames(neg_Nanog)),'')), hjust=0.6,vjust=0, size = 3)
+        geom_text(aes(label=ifelse(neg_Nanog$FDR.p == na | neg_Nanog$FDR.n == na, as.character(rownames(neg_Nanog)),'')), hjust=0.6,vjust=0, size = 3)
       
     } else {
       rownames(n_otx2) <- n_otx2$markers
       colnames(n_otx2)[3] <- "FDR"
       n_otx2 <- n_otx2[order(n_otx2[[2]], decreasing = FALSE), ]
       n_otx2$markers <- factor(n_otx2$markers, levels = n_otx2$markers)
-      ggplot(n_otx2, aes(`markers`, y=nscore, label=nscore)) + geom_bar(stat='identity', aes(fill=FDR), width=.5) + 
+      ggplot(n_otx2, aes(`markers`, y=sel_score1, label=sel_score1)) + geom_bar(stat='identity', aes(fill=FDR), width=.5) + 
         coord_flip()
     }
   }

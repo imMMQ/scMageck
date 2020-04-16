@@ -9,6 +9,6 @@ Description: scMAGeCK is a computational model to identify genes associated with
 License: BSD_2_clause
 biocViews: CRISPR, SingleCell, RNASeq, PooledScreens, Transcriptomics, GeneExpression, Regression
 NeedsCompilation: yes
-Imports: Seurat, stats, utils
+Imports: Seurat, ggplot2, stats, utils
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

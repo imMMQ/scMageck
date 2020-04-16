@@ -77,7 +77,7 @@ pre_processRDS <- function(BARCODE, RDS) {
     }
   }
   bmatrix <- t(bmatrix)
-  obj.sgrna <- as.sparse(bmatrix, header = TRUE)
+  obj.sgrna <- as.sparse(bmatrix)
   targetobj[['sgRNA']] <- CreateAssayObject(counts = obj.sgrna)
   targetobj <- NormalizeData(targetobj, assay = "sgRNA", normalization.method = "CLR")
   targetobj <- ScaleData(targetobj, assay = "sgRNA")

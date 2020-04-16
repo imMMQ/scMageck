@@ -29,10 +29,11 @@ identity collection step.
 }
  \item{sgRNA}{
 Generate whole sgRNAs distribution when sgRNA = NULL, add sgRNAs to see the specific 
-sgRNA distribution.
+sgRNA distribution. Mutiple sgRNAs can be provided, separated by ",". For example, "APC,TP53".
 }
  \item{GENE}{
-Genes whose expressions are to be compared under different cell coditions.
+Genes whose expressions are to be compared under different cell coditions. Mutiple genes can be provided, separated by ",". For example, "APC,TP53". 
+when provide mutiple genes, it would show the average gene expression. 
 }
  \item{CONTROL}{
 Set up the sepecifc clusters to compare the gene expression. it would compare gene

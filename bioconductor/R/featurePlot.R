@@ -135,7 +135,9 @@ featurePlot <- function(RDS, TYPE = plot.type, BARCODE = NULL, sgRNA = NULL, GEN
       colfunc<-colorRampPalette(c("skyblue3","aquamarine3","yellow","red"))
       
       if (is.null(sgRNA)) {
-        grna <- t(GetAssayData(RDS, assay = "sgRNA"))
+        grna <- GetAssayData(RDS, assay = "sgRNA")
+        grna <- as.matrix(grna)
+        grna <- t(grna)
         grna <- as.data.frame(grna)
         da <- colnames(grna)[1]
         target_sgrna_list <-  paste("sgrna_", da, sep = "")
@@ -143,29 +145,29 @@ featurePlot <- function(RDS, TYPE = plot.type, BARCODE = NULL, sgRNA = NULL, GEN
         target_sgrna_list = strsplit(sgRNA, ",")[[1]]
         target_sgrna_list = trimws(target_sgrna_list)
         target_sgrna_list <-  paste("sgrna_", target_sgrna_list, sep = "")
-        grna <- FetchData(Demo, target_sgrna_list)
+        grna <- FetchData(RDS, target_sgrna_list)
         }
         grna$grna <- rowSums(grna)
         grna <- subset(grna, grna > 0)
         grna <- grna["grna"]
-        da <- FeaturePlot(Demo, target_sgrna_list[1])
+        da <- FeaturePlot(RDS, target_sgrna_list[1])
         da_1 <- da$data
         num <- nrow(da_1)/3
         da_1 <- da_1[-4]
-        da_2 <- merge(da_1, grna, by = 0, all = FALSE)
-        if (nrow(da_2) >= num) {
-          p <- ggplot(da_2, aes(UMAP_1, UMAP_2, z = da_2[[5]])) + geom_density2d(aes(colour = stat(level))) + 
+        data <- merge(da_1, grna, by = 0, all = FALSE)
+        if (nrow(data) >= num) {
+          p <- ggplot(data, aes(UMAP_1, UMAP_2, z = data[[5]])) + geom_density2d(aes(colour = stat(level))) + 
             scale_color_gradientn(colours = colfunc(4)) + ggtitle(paste("Density of sgRNAs")) + theme_bw()
           p + theme(axis.text = element_text(size = axis.size)) + theme(title = element_text(size = title.size)) + 
             theme(legend.text = element_text(size = legend.text)) 
         } else {
-          da_2 <- merge(da_1, grna, by = 0, all = TRUE)
-          da_2[is.na(da_2)] <- "0"
-          rownames(da_2) <- da_2[[1]]
-          da_2 <- da_2[-1]
-          colnames(da_2)[4] <- target_sgrna_list[1]
-          da_2[[4]] <- as.numeric(da_2[[4]])
-          da$data <- da_2
+          data <- merge(da_1, grna, by = 0, all = TRUE)
+          data[is.na(data)] <- "0"
+          rownames(data) <- data[[1]]
+          data <- data[-1]
+          colnames(data)[4] <- target_sgrna_list[1]
+          data[[4]] <- as.numeric(data[[4]])
+          da$data <- data
           da + ggtitle("Density of sgRNAs")
         }
     } else {
